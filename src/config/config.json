@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "TFUKRYNKAVcCFMieiGvubAMWZuiErgcY",
+    "database": "railway",
+    "host": "trolley.proxy.rlwy.net",
+    "dialect": "mysql",
+    "port" : 57421
+  },
+  "test": {
+    "username": "root",
+    "password": "TFUKRYNKAVcCFMieiGvubAMWZuiErgcY",
+    "database": "railway",
+    "host": "trolley.proxy.rlwy.net",
+    "dialect": "mysql",
+    "port" : 57421
+  },
+  "production": {
+    "username": "root",
+    "password": "TFUKRYNKAVcCFMieiGvubAMWZuiErgcY",
+    "database": "railway",
+    "host": "trolley.proxy.rlwy.net",
+    "dialect": "mysql",
+    "port" : 57421
+  }
+}
