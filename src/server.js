@@ -1,11 +1,22 @@
 const express = require('express');
-const { sequelize } = require('./models'); // Import de l'instance Sequelize
-const app = require('./app');
+const cors = require("cors"); // Import du module CORS
+const { Sequelize } = require('sequelize');  // On importe Sequelize
+const authRoutes = require('./routes/authRoutes');
 
-// ✅ Test de connexion à la base de données
-sequelize.authenticate()
-    .then(() => console.log('✅ Connexion réussie à la BDD Railway'))
-    .catch(err => console.error('❌ Erreur de connexion', err));
+const app = express();
+app.use(cors({
+  origin: "http://localhost:3000", // Autorise uniquement ton frontend React
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('Bienvenue sur le serveur API !');  // Réponse pour la racine
+  });
+
+app.use('/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));
+app.listen(5000, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));
