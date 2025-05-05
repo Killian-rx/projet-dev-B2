@@ -8,7 +8,10 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.13.0",
-    "sequelize": "^6.37.6"
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
@@ -17,5 +20,20 @@
     "start:backend": "node src/server.js",
     "start:frontend": "cd src/client && npm start",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
-  }
+  },
+  "name": "projet-dev-b2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Killian-rx/projet-dev-B2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Killian-rx/projet-dev-B2/issues"
+  },
+  "homepage": "https://github.com/Killian-rx/projet-dev-B2#readme"
 }

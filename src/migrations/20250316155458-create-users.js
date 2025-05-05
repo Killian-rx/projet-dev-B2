@@ -1,4 +1,4 @@
-// Exemple : src/migrations/20230316000000-create-users.js
+// src/migrations/20230316000000-create-users.js
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Users', {
@@ -20,6 +20,15 @@ module.exports = {
       password: {
         type: Sequelize.STRING(255),
         allowNull: false,
+      },
+      role_id: { // Nouvelle colonne pour faire référence à la table 'Roles'
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Roles', // La table associée
+          key: 'id',      // La clé primaire de la table 'Roles'
+        },
+        onDelete: 'CASCADE', // Si un rôle est supprimé, les utilisateurs associés seront aussi supprimés
       },
       created_at: {
         type: Sequelize.DATE,

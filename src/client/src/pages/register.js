@@ -33,6 +33,7 @@ const Register = () => {
                 <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Mot de passe" value={formData.password} onChange={handleChange} required />
                 <button type="submit">S'inscrire</button>
+                <p>Déja inscrit ? <a href="/login">Connectez-vous ici</a></p>
             </form>
         </div>
     );

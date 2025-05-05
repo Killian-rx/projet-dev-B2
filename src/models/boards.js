@@ -27,5 +27,9 @@ const Board = sequelize.define('Board', {
 
 // Relation : Un board appartient à un utilisateur (owner)
 Board.belongsTo(User, { foreignKey: 'owner_id' });
+Board.associate = (models) => {
+  Board.hasMany(models.User_Project_Role, { foreignKey: 'board_id' });
+};
+
 
 module.exports = Board;

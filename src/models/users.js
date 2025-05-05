@@ -20,13 +20,27 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
+  role_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Roles',  // Nom de la table associée
+      key: 'id',       // Clé primaire de la table Roles
+    },
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-  }
+  },
 }, {
   tableName: 'Users',
-  timestamps: false,  // Si tu table a déjà une colonne created_at
+  timestamps: false,  // Utilisé si tu n'as pas de colonne `updated_at` dans ta table
 });
+
+User.associate = (models) => {
+  User.belongsTo(models.Role, { foreignKey: 'role_id' });
+  User.hasMany(models.User_Project_Role, { foreignKey: 'user_id' });
+};
+
 
 module.exports = User;

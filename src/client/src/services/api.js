@@ -30,3 +30,20 @@ export const loginUser = async (userData) => {
         return { error: "Erreur réseau" };
     }
 };
+
+export const getUserProfile = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/user/me`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return await response.json();
+    } catch (error) {
+        console.error("Erreur lors de la récupération du profil :", error);
+        return { error: "Erreur réseau" };
+    }
+};
