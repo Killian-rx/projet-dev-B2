@@ -1,0 +1,28 @@
+/* filepath: src/client/src/css/profile.css */
+.profile-container {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #f4f5f7;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.profile-container h2 {
+  margin-bottom: 1rem;
+  color: #026aa7;
+  text-align: center;
+}
+.profile-info p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+.profile-info strong {
+  color: #333;
+}
+.profile-loading,
+.profile-error {
+  text-align: center;
+  color: #e53935;
+  margin-top: 2rem;
+}

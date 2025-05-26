@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/boards', boardRoutes);
-app.use('/lists', listRoutes);
+app.use('/', listRoutes);
 app.use('/cards', cardRoutes);
 app.use('/comments', commentRoutes);
 app.use('/labels', labelRoutes);

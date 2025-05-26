@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Board = require('./Board');  // Importer le modèle Board
+const Board = require('./boards');  // Importer le modèle Board
 
 const List = sequelize.define('List', {
   id: {
@@ -19,10 +19,6 @@ const List = sequelize.define('List', {
   position: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
   }
 }, {
   tableName: 'Lists',

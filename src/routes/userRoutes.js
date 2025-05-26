@@ -3,6 +3,6 @@ const router = express.Router();
 const auth = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
 
-router.get('/me', userController.getMe);
+router.get('/me', auth, userController.getMe);
 
 module.exports = router;

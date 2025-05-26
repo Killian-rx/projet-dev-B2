@@ -1,7 +1,11 @@
 // 📁 routes/boardRoutes.js
 const express = require('express');
 const router = express.Router();
+const auth = require('../middlewares/authMiddleware');
 const boardController = require('../controllers/boardController');
+
+// Apply auth to all board routes
+router.use(auth);
 
 // CRUD des boards
 router.get('/', boardController.getAllBoards);

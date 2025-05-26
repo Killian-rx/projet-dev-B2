@@ -20,11 +20,13 @@ export const loginUser = async (userData) => {
     headers: jsonHeaders(),
     body: JSON.stringify(userData),
   });
-  return await res.json();
+  const data = await res.json();
+  if (data.token) localStorage.setItem('token', data.token);
+  return data;
 };
 
 export const getUserProfile = async (token) => {
-  const res = await fetch(`${API_URL}/users/me`, {
+  const res = await fetch(`${API_URL}/user/me`, {
     headers: jsonHeaders(token),
   });
   return await res.json();
@@ -103,14 +105,12 @@ export const deleteList = async (listId, token) => {
 
 // --- CARDS ---
 export const getCardsByList = async (listId, token) => {
-  const res = await fetch(`${API_URL}/lists/${listId}/cards`, {
-    headers: jsonHeaders(token),
-  });
+  const res = await fetch(`${API_URL}/cards/lists/${listId}/cards`, { headers: jsonHeaders(token) });
   return await res.json();
 };
 
 export const createCard = async (listId, data, token) => {
-  const res = await fetch(`${API_URL}/lists/${listId}/cards`, {
+  const res = await fetch(`${API_URL}/cards/lists/${listId}/cards`, {
     method: "POST",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -212,6 +212,21 @@ export const getRoles = async (token) => {
 export const createRole = async (data, token) => {
   const res = await fetch(`${API_URL}/roles`, {
     method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+// --- MEMBERS ---
+export const getBoardMembers = async (boardId, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/members`, { headers: jsonHeaders(token) });
+  return await res.json();
+};
+
+export const addBoardMember = async (boardId, data, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/members`, {
+    method: 'POST',
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
   });

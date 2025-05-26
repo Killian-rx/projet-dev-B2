@@ -1,0 +1,76 @@
+/* filepath: src/client/src/css/navbar.css */
+
+/* Add global reset to avoid body margin causing scroll */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Existing navbar styles */
+.navbar {
+  position: fixed; /* Fix navbar to top */
+  width: 85%;
+  margin: auto;
+  top: 25px; /* Adjusted to avoid overlap with other content */
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+}
+
+.navbar-logo {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none; /* Remove underline */
+}
+
+/* Desktop links */
+.navbar-links {
+  display: none;
+  gap: 1rem;
+}
+
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Mobile menu button */
+.navbar-menu {
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+.dropdown-menu a {
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+.dropdown-menu a:hover {
+  background: #333;
+}
+
+/* Responsive: show inline links on wider screens */
+@media (min-width: 768px) {
+  .navbar-menu { display: none; }
+  .navbar-links { display: flex; }
+  .dropdown-menu { display: none; }
+}

@@ -1,0 +1,5 @@
+.projects-container { font-family: Arial, sans-serif; padding: 1rem; }
+.projects-header { display: flex; justify-content: space-between; align-items: center; }
+.projects-list ul { list-style: none; padding: 0; }
+.projects-list li { cursor: pointer; padding: 0.5rem; border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; }
+.projects-list li:hover { background: #f0f0f0; }
