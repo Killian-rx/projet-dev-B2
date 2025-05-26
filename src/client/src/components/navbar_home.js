@@ -2,18 +2,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/navbar.css';
+import logo from '../assets/logo.png';
 
 function NavBar() {
   const [open, setOpen] = useState(false);
   return (
     <nav className="navbar">
-      <div className="navbar-logo">Organix</div>
+      <div className="navbar-logo">
+        <img src={logo} alt="Logo" className="navbar-logo-img" />
+        <span className="navbar-logo-text">Organix</span>
+      </div>
       {/* Inline links for desktop */}
       <div className="navbar-links">
-        <Link to="/projects">Mes projets</Link>
-        <Link to="/projects">Nouveau projet</Link>
-        <Link to="/profile">Profil</Link>
+        <Link to="/projects">En savoir plus</Link>
+        <Link to="/profile">A propos</Link>
       </div>
+
+      <button className="navbar-auth">
+        <Link to="/login" className='navbar-auth-link'>Connexion</Link>
+      </button>
+
       {/* Hamburger for mobile */}
       <div className="navbar-menu" onClick={() => setOpen(!open)}>☰</div>
       {open && (

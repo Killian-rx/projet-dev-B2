@@ -1,9 +1,12 @@
 // pages/login.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loginUser } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onLoginSuccess }) => {  // <-- Assure-toi de recevoir la prop ici
+const Login = () => {
+    useEffect(() => {
+      localStorage.removeItem('token');
+    }, []);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -23,8 +26,7 @@ const Login = ({ onLoginSuccess }) => {  // <-- Assure-toi de recevoir la prop i
             setMessage('❌ ' + response.error);
         } else {
             setMessage('✅ Connexion réussie !');
-            onLoginSuccess(); // Appelle la fonction pour marquer la connexion réussie
-            navigate('/'); // Redirige vers la page d'accueil
+            navigate('/projects'); // Redirige vers la page des projets
         }
     };
 

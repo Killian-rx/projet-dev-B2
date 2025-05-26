@@ -11,7 +11,7 @@ html, body {
   position: fixed; /* Fix navbar to top */
   width: 85%;
   margin: auto;
-  top: 25px; /* Adjusted to avoid overlap with other content */
+  top: 10px; /* Adjusted to avoid overlap with other content */
   left: 0;
   right: 0;
   display: flex;
@@ -23,23 +23,59 @@ html, body {
 }
 
 .navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo-img {
+  width: 50px;
+  height: 50px;
+}
+
+.navbar-logo-text {
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
   text-decoration: none; /* Remove underline */
 }
 
 /* Desktop links */
 .navbar-links {
+  margin: auto;
   display: none;
-  gap: 1rem;
+  gap: 3rem;
+}
+
+.navbar-auth{
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.navbar-auth-link {
+  color: #000; /* Default link color */
+  text-decoration: none; /* Remove underline */
+}
+
+.navbar-auth:hover {
+  background: #f0f0f0; /* Lighter background on hover */
 }
 
 
+
 .navbar-links a {
-  color: white;
+  color: rgba(255, 255, 255, 0.6  );
   text-decoration: none;
   font-weight: 500;
+}
+
+.navbar-links a:hover {
+  color: white; /* Change color on hover */
 }
 
 /* Mobile menu button */
