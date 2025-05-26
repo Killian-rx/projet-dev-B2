@@ -1,49 +1,219 @@
-const API_URL = "http://localhost:5000"; // Adresse de ton backend Express
+const API_URL = "http://localhost:5000"; // ou depuis .env
+const jsonHeaders = (token) => ({
+  "Content-Type": "application/json",
+  Authorization: token ? `Bearer ${token}` : undefined,
+});
 
+// --- USERS ---
 export const registerUser = async (userData) => {
-    try {
-        const response = await fetch(`${API_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
-        });
-
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur lors de l'inscription :", error);
-        return { error: "Erreur réseau" };
-    }
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(userData),
+  });
+  return await res.json();
 };
 
-
 export const loginUser = async (userData) => {
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
-        });
-
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur lors de la connexion :", error);
-        return { error: "Erreur réseau" };
-    }
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(userData),
+  });
+  return await res.json();
 };
 
 export const getUserProfile = async (token) => {
-    try {
-        const response = await fetch(`${API_URL}/user/me`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-        });
+  const res = await fetch(`${API_URL}/users/me`, {
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
 
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur lors de la récupération du profil :", error);
-        return { error: "Erreur réseau" };
-    }
+// --- BOARDS ---
+export const getBoards = async (token) => {
+  const res = await fetch(`${API_URL}/boards`, { headers: jsonHeaders(token) });
+  return await res.json();
+};
+
+export const getBoard = async (id, token) => {
+  const res = await fetch(`${API_URL}/boards/${id}`, { headers: jsonHeaders(token) });
+  return await res.json();
+};
+
+export const createBoard = async (data, token) => {
+  const res = await fetch(`${API_URL}/boards`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const updateBoard = async (id, data, token) => {
+  const res = await fetch(`${API_URL}/boards/${id}`, {
+    method: "PUT",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteBoard = async (id, token) => {
+  const res = await fetch(`${API_URL}/boards/${id}`, {
+    method: "DELETE",
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+// --- LISTS ---
+export const getListsByBoard = async (boardId, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/lists`, {
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+export const createList = async (boardId, data, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/lists`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const updateList = async (listId, data, token) => {
+  const res = await fetch(`${API_URL}/lists/${listId}`, {
+    method: "PUT",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteList = async (listId, token) => {
+  const res = await fetch(`${API_URL}/lists/${listId}`, {
+    method: "DELETE",
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+// --- CARDS ---
+export const getCardsByList = async (listId, token) => {
+  const res = await fetch(`${API_URL}/lists/${listId}/cards`, {
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+export const createCard = async (listId, data, token) => {
+  const res = await fetch(`${API_URL}/lists/${listId}/cards`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const updateCard = async (cardId, data, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}`, {
+    method: "PUT",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteCard = async (cardId, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}`, {
+    method: "DELETE",
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+// --- COMMENTS ---
+export const getCommentsByCard = async (cardId, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}/comments`, {
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+export const createComment = async (cardId, data, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}/comments`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const updateComment = async (commentId, data, token) => {
+  const res = await fetch(`${API_URL}/comments/${commentId}`, {
+    method: "PUT",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteComment = async (commentId, token) => {
+  const res = await fetch(`${API_URL}/comments/${commentId}`, {
+    method: "DELETE",
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+// --- LABELS ---
+export const getLabelsByBoard = async (boardId, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/labels`, {
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+export const createLabel = async (boardId, data, token) => {
+  const res = await fetch(`${API_URL}/boards/${boardId}/labels`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const updateLabel = async (labelId, data, token) => {
+  const res = await fetch(`${API_URL}/labels/${labelId}`, {
+    method: "PUT",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteLabel = async (labelId, token) => {
+  const res = await fetch(`${API_URL}/labels/${labelId}`, {
+    method: "DELETE",
+    headers: jsonHeaders(token),
+  });
+  return await res.json();
+};
+
+// --- ROLES ---
+export const getRoles = async (token) => {
+  const res = await fetch(`${API_URL}/roles`, { headers: jsonHeaders(token) });
+  return await res.json();
+};
+
+export const createRole = async (data, token) => {
+  const res = await fetch(`${API_URL}/roles`, {
+    method: "POST",
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
 };
