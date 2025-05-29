@@ -4,12 +4,15 @@
   align-items: center;
   justify-content: space-between;
   height: 100vh;
-  background-color: #111;
+  background-color: #1c1c1c;
   color: #fff;
   font-family: Arial, sans-serif;
   padding: 1rem;
   box-sizing: border-box;
+  position: relative; /* Added to position arc elements */
+  overflow: hidden;
 }
+
 
 .home-info p {
   margin: 0.5rem 0;
@@ -75,6 +78,6 @@
 
 .home-subtitle {
   font-size: 0.875rem;
-  margin: 0; /* remove bottom margin */
+  margin-bottom: 20px; /* remove bottom margin */
   text-align: center;
 }

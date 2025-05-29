@@ -2,14 +2,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/navbar.css';
-import logo from '../assets/logo.png';
 
 function NavBar() {
   const [open, setOpen] = useState(false);
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <img src={logo} alt="Logo" className="navbar-logo-img" />
         <span className="navbar-logo-text">Organix</span>
       </div>
       {/* Inline links for desktop */}

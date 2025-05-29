@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { registerUser } from "../services/api"; // Import de l'API
+import { registerUser } from "../services/api";
+import { Link } from "react-router-dom";
+import "../css/register.css";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -26,14 +28,14 @@ const Register = () => {
 
     return (
         <div className="register-container">
-            <h2>Inscription</h2>
             {message && <p>{message}</p>}
-            <form onSubmit={handleSubmit}>
+            <form className="register-form" onSubmit={handleSubmit}>
+                <h2>Inscription</h2>
                 <input type="text" name="name" placeholder="Nom" value={formData.name} onChange={handleChange} required />
                 <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Mot de passe" value={formData.password} onChange={handleChange} required />
                 <button type="submit">S'inscrire</button>
-                <p>Déja inscrit ? <a href="/login">Connectez-vous ici</a></p>
+                <p>Déjà inscrit ? <Link to="/login">Connectez-vous ici</Link></p>
             </form>
         </div>
     );
