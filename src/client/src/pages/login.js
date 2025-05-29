@@ -78,12 +78,12 @@ const Login = () => {
             </div>
             <div className="social-login">
                 <button className="google-login">
-                <img src={google} alt="Google logo"/>
-                    Se connecter avec Google
+                <img src={google} alt="Google logo" />
+                <span>Se connecter avec Google</span>
                 </button>
                 <button className="apple-login">
-                <img src={apple} alt="Apple logo"/>
-                    Se connecter avec Apple
+                <img src={apple} alt="Apple logo" />
+                <span>Se connecter avec Apple</span>
                 </button>
             </div>
           </form>
