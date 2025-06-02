@@ -31,11 +31,17 @@ const Login = () => {
         }
         const response = await loginUser(formData);
 
+        console.log(response); // Inspectez la réponse de l'API
+
         if (response.error) {
             setMessage('❌ ' + response.error);
-        } else {
+        } else if (response.token) { // Vérifie que le token est présent
+            localStorage.setItem('token', response.token); // Sauvegarde du token
+            console.log('Token sauvegardé, redirection en cours...'); // Vérifiez si cette ligne est atteinte
             setMessage('✅ Connexion réussie !');
             navigate('/projects'); // Redirige vers la page des projets
+        } else {
+            setMessage('❌ Une erreur inattendue est survenue.');
         }
     };
 

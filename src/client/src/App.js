@@ -20,7 +20,7 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Protected routes */}
-        <Route path="/projects" element={token ? <Projects /> : <Navigate to="/login" replace />} />
+        <Route path="/projects" element={<Projects />} />
         <Route path="/boards/:id" element={token ? <Board /> : <Navigate to="/login" replace />} />
         <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" replace />} />
       </Routes>

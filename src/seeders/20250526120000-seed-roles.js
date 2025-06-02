@@ -16,6 +16,12 @@ module.exports = {
         name: 'Member',
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: 3, // Ajout d'un rôle Admin
+        name: 'Admin',
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },
@@ -23,7 +29,7 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     // Remove seeded roles
     await queryInterface.bulkDelete('Roles', {
-      id: { [Sequelize.Op.in]: [1, 2] }
+      id: { [Sequelize.Op.in]: [1, 2, 3] } // Inclure l'ID du rôle Admin
     }, {});
   }
 };
