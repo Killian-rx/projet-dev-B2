@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000"; // ou depuis .env
+const API_URL = "http://localhost:5000"; // Assurez-vous que cette URL correspond à celle du backend
 const jsonHeaders = (token) => ({
   "Content-Type": "application/json",
   Authorization: token ? `Bearer ${token}` : undefined,
@@ -15,14 +15,26 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async (userData) => {
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: jsonHeaders(),
-    body: JSON.stringify(userData),
-  });
-  const data = await res.json();
-  if (data.token) localStorage.setItem('token', data.token);
-  return data;
+    try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        });
+
+        if (!res.ok) {
+            throw new Error(`Erreur HTTP: ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (data.token) localStorage.setItem('token', data.token);
+        return data;
+    } catch (error) {
+        console.error('Erreur lors de la connexion:', error);
+        return { error: 'Erreur lors de la connexion au serveur.' };
+    }
 };
 
 export const getUserProfile = async (token) => {
@@ -43,13 +55,21 @@ export const getBoard = async (id, token) => {
   return await res.json();
 };
 
-export const createBoard = async (data, token) => {
-  const res = await fetch(`${API_URL}/boards`, {
-    method: "POST",
-    headers: jsonHeaders(token),
-    body: JSON.stringify(data),
-  });
-  return await res.json();
+export const createBoard = async (boardData, token) => {
+    try {
+        const response = await fetch(`${API_URL}/api/projects`, { // Assurez-vous que l'URL correspond à la route backend
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(boardData),
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Erreur lors de la création du projet:', error);
+        return { error: 'Erreur lors de la création du projet' };
+    }
 };
 
 export const updateBoard = async (id, data, token) => {

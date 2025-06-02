@@ -25,23 +25,21 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.email || !formData.password) {
-            setError('Veuillez remplir tous les champs');
-            return;
-        }
-        const response = await loginUser(formData);
+        setError(''); // Réinitialise les erreurs
+        setMessage(''); // Réinitialise les messages
 
-        console.log(response); // Inspectez la réponse de l'API
+        try {
+            const response = await loginUser(formData);
 
-        if (response.error) {
-            setMessage('❌ ' + response.error);
-        } else if (response.token) { // Vérifie que le token est présent
-            localStorage.setItem('token', response.token); // Sauvegarde du token
-            console.log('Token sauvegardé, redirection en cours...'); // Vérifiez si cette ligne est atteinte
-            setMessage('✅ Connexion réussie !');
-            navigate('/projects'); // Redirige vers la page des projets
-        } else {
-            setMessage('❌ Une erreur inattendue est survenue.');
+            if (response.error) {
+                setError(response.error); // Affiche l'erreur renvoyée par l'API
+            } else {
+                setMessage('✅ Connexion réussie !');
+                navigate('/projects'); // Redirige vers la page des projets
+            }
+        } catch (err) {
+            setError('Erreur lors de la connexion. Veuillez réessayer.');
+            console.error(err);
         }
     };
 

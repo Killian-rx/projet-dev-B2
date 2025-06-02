@@ -9,13 +9,14 @@ const cardRoutes = require('./routes/cardRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const labelRoutes = require('./routes/labelRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:3000", // Autorise uniquement ton frontend React
+  origin: "http://localhost:3000", // Assurez-vous que cette URL correspond à celle de votre frontend React
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
@@ -37,7 +38,8 @@ app.use('/cards', cardRoutes);
 app.use('/comments', commentRoutes);
 app.use('/labels', labelRoutes);
 app.use('/roles', roleRoutes);
+app.use('/api', projectRoutes); // Préfixe `/api` pour les routes
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(5000, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));

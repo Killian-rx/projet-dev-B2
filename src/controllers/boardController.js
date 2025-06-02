@@ -5,7 +5,7 @@ const boardController = {
     try {
       const boards = await Board.findAll({
         where: { owner_id: req.user.id },
-        attributes: ['id', 'name', 'owner_id', 'created_at'],
+        attributes: ['id', 'name', 'image', 'owner_id', 'created_at'], // Inclut 'image'
       });
       return res.status(200).json(boards);
     } catch (error) {
@@ -17,7 +17,9 @@ const boardController = {
   getBoardById: async (req, res) => {
     try {
       const { id } = req.params;
-      const board = await Board.findByPk(id);
+      const board = await Board.findByPk(id, {
+        attributes: ['id', 'name', 'image', 'owner_id', 'created_at'], // Inclut 'image'
+      });
       if (!board) return res.status(404).json({ error: 'Projet non trouvé' });
       res.json(board);
     } catch (error) {
@@ -28,9 +30,9 @@ const boardController = {
 
   createBoard: async (req, res) => {
     try {
-      const { name } = req.body;
+      const { name, image } = req.body; // Inclut 'image' dans la création
       if (!name) return res.status(400).json({ error: 'Le nom du projet est requis.' });
-      const board = await Board.create({ name, owner_id: req.user.id });
+      const board = await Board.create({ name, image, owner_id: req.user.id }); // Ajoute 'image'
       // Link creator in User_Project_Roles as Owner (role_id 1)
       const UserProjectRole = require('../models/user_project_role');
       await UserProjectRole.create({ user_id: req.user.id, board_id: board.id, role_id: 1 });
