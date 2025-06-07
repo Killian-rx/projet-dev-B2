@@ -1,7 +1,7 @@
 // filepath: src/client/src/components/NavBar.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../css/navbar.css';
+import '../css/navbar_home.css';
 
 function NavBar() {
   const [open, setOpen] = useState(false);

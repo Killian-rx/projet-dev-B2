@@ -38,10 +38,22 @@ export const loginUser = async (userData) => {
 };
 
 export const getUserProfile = async (token) => {
-  const res = await fetch(`${API_URL}/user/me`, {
-    headers: jsonHeaders(token),
-  });
-  return await res.json();
+  try {
+    const response = await fetch(`${API_URL}/user/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Inclut le token pour l'authentification
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération du profil utilisateur');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur API getUserProfile:', error);
+    return null;
+  }
 };
 
 // --- BOARDS ---
@@ -251,4 +263,24 @@ export const addBoardMember = async (boardId, data, token) => {
     body: JSON.stringify(data),
   });
   return await res.json();
+};
+
+// --- PROJECTS ---
+export const getProjectDetails = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/projects/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des détails du projet');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur API getProjectDetails:', error);
+    throw error;
+  }
 };

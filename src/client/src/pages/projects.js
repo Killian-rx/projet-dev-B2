@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getBoards, createBoard } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/navbar'; // Importez le composant Navbar
 import '../css/projects.css';// Assurez-vous que le chemin est correct pour l'image par défaut
 
 function Projects() {
@@ -79,7 +80,7 @@ function Projects() {
 
   return (
     <div className="projects-container">
-      <button onClick={handleCreateClick} style={{ marginBottom: '1rem' }}>Créer un nouveau projet</button>
+      <Navbar onCreateClick={handleCreateClick} />
       {showForm && (
         <form onSubmit={handleSubmitNew} style={{ marginBottom: '1rem' }}>
           <input
@@ -125,22 +126,43 @@ function Projects() {
         <p>Aucun projet trouvé.</p>
       ) : (
         <div className="projects-list">
-          <ul>
+          <div className="cards-container">
             {boards.map((board) => (
-              <li
+              <div
+                className="project-card"
                 key={board.id}
-                onClick={() => navigate(`/boards/${board.id}`)}
-                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/boards/${board.id}`)} // Navigue vers la page du projet
+                style={{ cursor: 'pointer' }} // Ajoute un curseur pour indiquer que la carte est cliquable
               >
-                <img
-                  src={board.image} // Utilise directement le champ 'image' renvoyé par le backend
-                  alt={board.name}
-                  style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                />
-                {board.name}
-              </li>
+                <div
+                  className="project-card-image"
+                  style={{ backgroundImage: `url(${board.image})` }}
+                >
+                  <div className="project-card-title">
+                    <h3>{board.name}</h3>
+                  </div>
+                </div>
+                <div className="project-card-footer">
+                  <div className="project-members">
+                    {board.members?.map((member) => (
+                      <span key={member.id} className="member-initial">
+                        {member.name.charAt(0).toUpperCase()}
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    className="more-options"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Empêche la navigation si le bouton est cliqué
+                      console.log('Options clicked');
+                    }}
+                  >
+                    ...
+                  </button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

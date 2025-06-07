@@ -1,5 +1,125 @@
-.projects-container { font-family: Arial, sans-serif; padding: 1rem; }
-.projects-header { display: flex; justify-content: space-between; align-items: center; }
-.projects-list ul { list-style: none; padding: 0; }
-.projects-list li { cursor: pointer; padding: 0.5rem; border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; }
-.projects-list li:hover { background: #f0f0f0; }
+.projects-container {
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  margin-top: 15vh;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projects-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.projects-list li {
+  cursor: pointer;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.projects-list li:hover {
+  background: #f0f0f0;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.project-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+  transition: transform 0.2s ease; /* Ajoute une animation au survol */
+}
+
+.project-card:hover {
+  transform: scale(1.02); /* Agrandit légèrement la carte au survol */
+}
+
+.project-card-image {
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.project-card-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-count {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.favorite-button {
+  background: none;
+  border: none;
+  color: yellow;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.project-card-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0rem 0rem 0rem 1rem;
+  width: 100%;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.project-card-footer {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-members {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.member-initial {
+  width: 30px;
+  height: 30px;
+  background: #007bff;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.more-options {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10; /* Assure que le bouton est au-dessus des autres éléments */
+}
+
+

@@ -9,17 +9,18 @@ html, body {
 /* Existing navbar styles */
 .navbar {
   position: fixed; /* Fix navbar to top */
-  width: 85%;
-  margin: auto;
-  top: 30px; /* Adjusted to avoid overlap with other content */
+  width: 100%; /* La barre occupe toute la largeur de la page */
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+  justify-content: space-between; /* Espace entre les éléments gauche et droit */
+  padding: 0.6rem 1rem; /* Décale les éléments des côtés */
   z-index: 1000;
   font-family: Arial, sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Bordure pleine largeur */
+  box-sizing: border-box; /* Inclut le padding dans la largeur totale */
 }
 
 .navbar-logo {
@@ -34,16 +35,24 @@ html, body {
 
 .navbar-logo-text {
   color: white;
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   font-weight: bold;
   text-decoration: none; /* Remove underline */
 }
 
+/* New navbar left styles */
+.navbar-left {
+  display: flex;
+  align-items: center; /* Centre verticalement le logo et les liens */
+  gap: 2rem; /* Ajoute un espace uniforme entre le logo et les liens */
+}
+
 /* Desktop links */
 .navbar-links {
-  margin: auto;
-  display: none;
-  gap: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Ajoute un espace entre les liens */
+  font-size: 0.9rem;
 }
 
 .navbar-auth{
@@ -102,6 +111,111 @@ html, body {
 }
 .dropdown-menu a:hover {
   background: #333;
+}
+
+/* New navbar list styles */
+.navbar-list {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-list li {
+  display: inline;
+}
+
+.navbar-list a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar-list a:hover {
+  text-decoration: underline;
+}
+
+/* Profile button and menu */
+.navbar-profile {
+  margin-left: auto; /* Pousse la partie profil à droite */
+  position: relative;
+  display: inline-block;
+}
+
+.navbar-profile-button {
+  display: flex;
+  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
+  background: #555; /* Couleur de fond par défaut */
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 0.8rem; /* Taille de la lettre */
+  font-weight: bold;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; /* Cercle */
+  text-transform: uppercase; /* Met la lettre en majuscule */
+  padding: 0; /* Supprime les marges internes */
+  line-height: normal; /* Assure un bon alignement vertical */
+  box-sizing: border-box; /* Inclut padding et bordure dans les dimensions */
+}
+
+.navbar-profile-button img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.navbar-profile-button span {
+  font-size: 0.8rem; /* Taille de la lettre */
+  font-weight: bold;
+}
+
+.navbar-profile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #333;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-profile-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.navbar-profile-menu a:hover {
+  background: #444;
+}
+
+.navbar-profile:hover .navbar-profile-menu {
+  display: block;
+}
+
+/* New styles for "Create" button */
+.navbar-create-button {
+  background: #007bff; /* Couleur bleue */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.navbar-create-button:hover {
+  background: #0056b3; /* Couleur bleue plus foncée au survol */
 }
 
 /* Responsive: show inline links on wider screens */
