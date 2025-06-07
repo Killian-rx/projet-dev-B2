@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers } from '../services/api';
+import Navbar from '../components/navbar'; // Importez le composant Navbar
+import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard } from '../services/api';
 import '../css/board.css'; // Assurez-vous d'avoir ce fichier CSS pour le style
 
 function Board() {
   const { id } = useParams();
-  // States for adding a new list
+  const [showCreatePopup, setShowCreatePopup] = useState(false); // État pour afficher la pop-up
+  const [newProjectName, setNewProjectName] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
+  const [creatingProject, setCreatingProject] = useState(false);
   const [showListForm, setShowListForm] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [addingList, setAddingList] = useState(false);
@@ -18,6 +22,12 @@ function Board() {
   const [members, setMembers] = useState([]);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+  const images = [
+    '/assets/boards/img1.jpg',
+    '/assets/boards/img2.jpg',
+    '/assets/boards/img3.jpg',
+    '/assets/boards/img4.jpg',
+  ]; // Liste des images disponibles
 
   useEffect(() => {
     if (!token) {
@@ -88,22 +98,103 @@ function Board() {
     }
   };
 
+  const handleCreateProject = async () => {
+    if (!newProjectName || !selectedImage) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
+    setCreatingProject(true);
+    try {
+      const token = localStorage.getItem('token');
+      const data = await createBoard({ name: newProjectName, image: selectedImage }, token);
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert('Projet créé avec succès !');
+        setShowCreatePopup(false);
+        setNewProjectName('');
+        setSelectedImage('');
+      }
+    } catch {
+      alert('Erreur lors de la création du projet.');
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
   if (loading) return <p>Chargement du projet...</p>;
   if (error) return <p>❌ {error}</p>;
 
   return (
-    <div className="board-container">
-      {/* Header */}
-      <div className="board-header">
-        <h2>{board.name}</h2>
-        <div className="board-members">
-          {members.map(m => (
-            <span key={m.user.id}>
-              {m.user.name} ({m.role.name})
-            </span>
-          ))}
+    <div
+      className="board-container"
+      style={{
+        backgroundImage: `url(${board?.image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <Navbar>
+        <button className="create-project-button" onClick={() => setShowCreatePopup(true)}>
+          Créer un projet
+        </button>
+      </Navbar>
+      {showCreatePopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <h2>Créer un nouveau projet</h2>
+            <input
+              type="text"
+              placeholder="Nom du projet"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+            />
+            <div className="image-gallery">
+              <p>Choisissez une image :</p>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {images.map((image) => (
+                  <img
+                    key={image}
+                    src={image}
+                    alt="Gallery"
+                    onClick={() => setSelectedImage(image)}
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      border: selectedImage === image ? '2px solid blue' : '1px solid gray',
+                      cursor: 'pointer',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <button onClick={handleCreateProject} disabled={creatingProject}>
+              {creatingProject ? 'Création...' : 'Créer'}
+            </button>
+            <button onClick={() => setShowCreatePopup(false)}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      <div className="project-navbar">
+        <div className="project-navbar-left">
+          <h2 className="project-name">{board.name}</h2>
+        </div>
+        <div className="project-navbar-right">
+          <div className="project-members">
+            {members.map((m) => (
+              <span key={m.user.id} className="member-initial">
+                {m.user.name.charAt(0).toUpperCase()}
+                <div className="member-info">
+                  {m.user.name} ({m.role.name})
+                </div>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
+
       {/* New List Form */}
       {showListForm && (
         <form onSubmit={handleSubmitList} className="new-list-form">
@@ -115,7 +206,7 @@ function Board() {
       )}
       {/* Lists Container */}
       <div className="lists-container">
-        {lists.map(list => (
+        {lists.map((list) => (
           <div key={list.id} className="list-column">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>{list.name}</h3>
@@ -136,14 +227,12 @@ function Board() {
             <button onClick={()=>handleAddCard(list.id)} className="add-card-button">+ Ajouter une carte</button>
           </div>
         ))}
-        <div className="add-list-column">
           <button
             className="add-list-column-button"
             onClick={handleShowListForm}
           >
-            + Ajouter une liste
+            + Ajouter une autre liste
           </button>
-        </div>
       </div>
     </div>
   );

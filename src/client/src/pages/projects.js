@@ -57,15 +57,19 @@ function Projects() {
     e.preventDefault();
     setAdding(true);
     try {
-      const data = await createBoard({ name: newName, image: selectedImage }, token); // Inclure l'image sélectionnée
+      const userId = localStorage.getItem('userId'); // Récupère l'ID de l'utilisateur depuis le stockage local
+      if (!userId) {
+        throw new Error('Utilisateur non identifié.');
+      }
+      const data = await createBoard({ name: newName, image: selectedImage, owner_id: userId }, token); // Inclure owner_id
       if (data.error) {
         setAddError(data.error);
       } else {
-        setBoards(prev => [...prev, data]);
+        setBoards((prev) => [...prev, data]);
         handleCancel();
       }
-    } catch {
-      setAddError('Erreur lors de la création');
+    } catch (err) {
+      setAddError(err.message || 'Erreur lors de la création');
     } finally {
       setAdding(false);
     }
@@ -75,12 +79,16 @@ function Projects() {
     setSelectedImage(image); // Met à jour l'image sélectionnée
   };
 
+  const handleProjectCreated = (newProject) => {
+    setBoards((prevBoards) => [...prevBoards, newProject]); // Ajoute le nouveau projet à la liste
+  };
+
   if (loading) return <p>Chargement des projets...</p>;
   if (error) return <p>❌ {error}</p>;
 
   return (
     <div className="projects-container">
-      <Navbar onCreateClick={handleCreateClick} />
+      <Navbar onCreateClick={handleCreateClick} onProjectCreated={handleProjectCreated} />
       {showForm && (
         <form onSubmit={handleSubmitNew} style={{ marginBottom: '1rem' }}>
           <input

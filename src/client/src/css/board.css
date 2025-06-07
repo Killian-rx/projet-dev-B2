@@ -1,22 +1,300 @@
-.board-container { font-family: Arial, sans-serif; }
-.board-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #026aa7; color: white; }
-.add-list-button { margin-left: 1rem; background: #5aac44; color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer; }
-.board-members span { margin-left: 0.5rem; padding: 0.25rem 0.5rem; background: #ffffff33; border-radius: 3px; }
-.new-list-form { padding: 1rem; background: #f4f5f7; display: flex; gap: 0.5rem; }
-.lists-container { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; overflow-x: auto; height: calc(100vh - 100px); }
-.list-column { background: #ebecf0; padding: 0.5rem; border-radius: 3px; min-width: 280px; max-height: 100%; overflow-y: auto; }
-.list-header { display: flex; justify-content: space-between; align-items: center; }
-.list-header h3 { margin: 0 0 0.5rem 0; }
-.card-item { background: white; padding: 0.5rem; border-radius: 3px; margin-bottom: 0.5rem; box-shadow: 0 1px 0 rgba(9,30,66,.25); }
-.card-item-header { display: flex; justify-content: space-between; align-items: center; }
-.add-card-button { margin-top: 0.5rem; background: transparent; border: none; color: #5e6c84; cursor: pointer; }
-.add-list-column { display: flex; align-items: center; justify-content: center; background: #ebecf0; padding: 0.5rem; border-radius: 3px; min-width: 280px; }
-.add-list-column-button { width: 100%; background: transparent; border: none; color: #5e6c84; cursor: pointer; text-align: left; font-size: 1rem; }
+.board-container {
+  font-family: Arial, sans-serif;
+  min-height: 100vh; /* Assure que le conteneur couvre toute la hauteur de la page */
+  color: white; /* Texte blanc pour contraster avec l'image de fond */
+  padding-top: 3rem; /* Ajoute un espace pour éviter que le contenu soit masqué par la navbar */
+  position: relative; /* Position relative pour les éléments internes */
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #026aa7;
+  color: white;
+}
+
+.add-list-button {
+  margin-left: 1rem;
+  background: #5aac44;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.board-members span {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #ffffff33;
+  border-radius: 3px;
+}
+
+.new-list-form {
+  padding: 1rem;
+  background: #f4f5f7;
+  display: flex;
+  gap: 0.5rem;
+  
+}
+
+.lists-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-x: auto;
+  height: calc(100vh - 100px);
+}
+
+.list-column {
+  background: #101204;
+  padding: 0.5rem;
+  border-radius: 15px;
+  min-width: 280px;
+  max-height: 100%;
+  overflow-y: auto;
+  color: #d6d6d6;
+}
+
+.list-column h3 {
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-header span {
+  margin: 0 0 0.9rem;
+}
+
+.card-item {
+  background: #343438; /* Fond semi-transparent pour les cartes */
+  padding: 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.card-item:hover {
+  background: #464646; /* Change le fond au survol */
+}
+
+.card-item span {
+  display: block;
+  margin-left: 0.5rem;
+  color: #d6d6d6; /* Couleur du texte des cartes */
+}
+
+.card-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-card-button {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: #d6d6d6;
+  cursor: pointer;
+  border-radius: 10px;
+  width: 100%;
+  text-align: left;
+}
+
+.add-card-button:hover {
+  background-color: #4b4b4b7a; /* Change le fond au survol */
+  color: #d6d6d6; /* Change la couleur du texte au survol */
+}
+
+.add-list-column-button{
+  background: #4b4b4b7a;
+  padding: 0.9rem;
+  border: none;
+  color: #d6d6d6;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 15px;
+  min-width: 280px;
+}
+
+.add-list-column-button:hover {
+  background: #4b4b4ba6; /* Change le fond au survol */
+}
+
 .edit-button {
-    background: transparent;
-    border: none;
-    color: #5e6c84;
-    cursor: pointer;
-    font-size: 0.875rem;
-    margin-left: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #5e6c84;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.project-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Centre verticalement les éléments */
+  background-color: rgba(0, 0, 0, 0.4); /* Fond semi-transparent pour contraster avec l'image */
+  padding: 0.8rem 2rem;
+  position: sticky;
+  top: 2rem; /* Place la barre en dessous de la navbar principale */
+  z-index: 900;
+  text-align: center;
+}
+
+.project-navbar-left {
+  display: flex;
+  align-items: center; /* Centre verticalement le nom du projet */
+  text-align: center;
+}
+
+.project-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0; /* Supprime les marges pour éviter le désalignement */
+  line-height: 1; /* Assure un alignement vertical correct */
+}
+
+.project-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-members {
+  display: flex;
+  gap: 0.5rem;
+  position: relative; /* Nécessaire pour positionner les infos au survol */
+}
+
+.member-initial {
+  width: 35px;
+  height: 35px;
+  background: #007bff;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Nécessaire pour positionner les infos */
+  cursor: pointer;
+}
+
+.member-initial:hover .member-info {
+  display: block; /* Affiche les infos au survol */
+}
+
+.member-info {
+  display: none; /* Masque les infos par défaut */
+  position: absolute;
+  top: 45px; /* Positionne juste en dessous de l'avatar */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 1); /* Fond semi-transparent */
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.lists-container {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.create-project-button {
+  background: #5aac44;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.create-project-button:hover {
+  background: #519839;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.popup h2 {
+  margin-bottom: 1rem;
+}
+
+.popup input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.popup .image-gallery {
+  margin-bottom: 1rem;
+}
+
+.popup button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup button:first-of-type {
+  background: #5aac44;
+  color: white;
+}
+
+.popup button:first-of-type:hover {
+  background: #519839;
+}
+
+.popup button:last-of-type {
+  background: #ccc;
+  color: black;
+}
+
+.popup button:last-of-type:hover {
+  background: #bbb;
 }

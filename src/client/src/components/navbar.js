@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUserProfile } from '../services/api';
+import { getUserProfile, createBoard } from '../services/api'; // ← import createBoard
 import '../css/navbar.css';
 
+function NavBar({ onProjectCreated }) {
+  const [username, setUsername] = useState('');
+  const [setUserId] = useState(''); // État pour stocker l'ID de l'utilisateur
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
+  const [creatingProject, setCreatingProject] = useState(false);
 
-function NavBar({ onCreateClick }) { // Ajoutez une prop pour gérer le clic sur "Créer"
-  const [username, setUsername] = useState(''); // État pour stocker le pseudo
+  const images = [
+    '/assets/boards/img1.jpg',
+    '/assets/boards/img2.jpg',
+    '/assets/boards/img3.jpg',
+    '/assets/boards/img4.jpg',
+  ]; // Liste des images disponibles
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -14,6 +25,7 @@ function NavBar({ onCreateClick }) { // Ajoutez une prop pour gérer le clic sur
         const data = await getUserProfile(token); // Appelle l'API pour récupérer le profil utilisateur
         if (data && data.name) {
           setUsername(data.name); // Met à jour le pseudo
+          setUserId(data.id); // Stocke l'ID de l'utilisateur
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du profil utilisateur:', error);
@@ -22,6 +34,35 @@ function NavBar({ onCreateClick }) { // Ajoutez une prop pour gérer le clic sur
 
     fetchUserProfile();
   }, []);
+
+  const handleCreateProject = async () => {
+    if (!newProjectName || !selectedImage) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
+    setCreatingProject(true);
+    try {
+      const token = localStorage.getItem('token');
+      const data = await createBoard(
+        { name: newProjectName, image: selectedImage },
+        token
+      ); // ← utilise createBoard
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert('Projet créé avec succès !');
+        setShowCreatePopup(false);
+        setNewProjectName('');
+        setSelectedImage('');
+        onProjectCreated?.(data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création du projet:', error);
+      alert('Erreur lors de la création du projet.');
+    } finally {
+      setCreatingProject(false);
+    }
+  };
 
   const firstLetter = username.charAt(0).toUpperCase(); // Récupère la première lettre du pseudo
 
@@ -35,7 +76,7 @@ function NavBar({ onCreateClick }) { // Ajoutez une prop pour gérer le clic sur
           <Link to="/projects">Mes projets</Link>
           <Link to="/profile">Mon profil</Link>
         </div>
-        <button className="navbar-create-button" onClick={onCreateClick}>
+        <button className="navbar-create-button" onClick={() => setShowCreatePopup(true)}>
           Créer
         </button>
       </div>
@@ -49,6 +90,43 @@ function NavBar({ onCreateClick }) { // Ajoutez une prop pour gérer le clic sur
           <Link to="/switch-account">Changer de compte</Link>
         </div>
       </div>
+
+      {showCreatePopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <h2>Créer un nouveau projet</h2>
+            <input
+              type="text"
+              placeholder="Nom du projet"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+            />
+            <div className="image-gallery">
+              <p>Choisissez une image :</p>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {images.map((image) => (
+                  <img
+                    key={image}
+                    src={image}
+                    alt="Gallery"
+                    onClick={() => setSelectedImage(image)}
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      border: selectedImage === image ? '2px solid blue' : '1px solid gray',
+                      cursor: 'pointer',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <button onClick={handleCreateProject} disabled={creatingProject}>
+              {creatingProject ? 'Création...' : 'Créer'}
+            </button>
+            <button onClick={() => setShowCreatePopup(false)}>Annuler</button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

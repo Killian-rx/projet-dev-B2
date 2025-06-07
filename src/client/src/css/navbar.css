@@ -19,8 +19,9 @@ html, body {
   padding: 0.6rem 1rem; /* Décale les éléments des côtés */
   z-index: 1000;
   font-family: Arial, sans-serif;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Bordure pleine largeur */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3); /* Bordure pleine largeur */
   box-sizing: border-box; /* Inclut le padding dans la largeur totale */
+  background-color: #1c1c1c;
 }
 
 .navbar-logo {
@@ -203,19 +204,83 @@ html, body {
 
 /* New styles for "Create" button */
 .navbar-create-button {
-  background: #007bff; /* Couleur bleue */
+  background: #5aac44;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
+  border-radius: 3px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-size: 1rem;
 }
 
 .navbar-create-button:hover {
-  background: #0056b3; /* Couleur bleue plus foncée au survol */
+  background: #519839;
+}
+
+/* Popup styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.popup h2 {
+  margin-bottom: 1rem;
+}
+
+.popup input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.popup .image-gallery {
+  margin-bottom: 1rem;
+}
+
+.popup button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup button:first-of-type {
+  background: #5aac44;
+  color: white;
+}
+
+.popup button:first-of-type:hover {
+  background: #519839;
+}
+
+.popup button:last-of-type {
+  background: #ccc;
+  color: black;
+}
+
+.popup button:last-of-type:hover {
+  background: #bbb;
 }
 
 /* Responsive: show inline links on wider screens */

@@ -4,14 +4,14 @@ const Project = require('../models/boards'); // Assurez-vous que le modèle est 
 const createBoard = async (req, res) => {
     try {
         const { name, image } = req.body; // Récupère le nom et l'image depuis la requête
-        const owner_id = req.user.id; // Récupère l'ID du propriétaire depuis le token (assurez-vous que `req.user` est défini)
+        const owner_id = req.user.id; // Récupère toujours l’ID utilisateur authentifié
 
         if (!name) {
             return res.status(400).json({ error: 'Le nom du projet est requis.' });
         }
 
         // Crée un nouveau projet avec le nom et l'image
-        const project = await Project.create({ name, image });
+        const project = await Project.create({ name, image, owner_id });  // Inclut owner_id
 
         // Retourne le projet créé
         res.status(201).json(project);
