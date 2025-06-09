@@ -73,3 +73,14 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la connexion.' });
   }
 };
+
+// 🔹 Déconnexion (logout)
+exports.logout = (req, res) => {
+  try {
+    // Invalidate the token on the client side by removing it from storage
+    res.status(200).json({ message: 'Déconnexion réussie' });
+  } catch (error) {
+    console.error('Erreur lors de la déconnexion:', error);
+    res.status(500).json({ error: 'Erreur lors de la déconnexion.' });
+  }
+};

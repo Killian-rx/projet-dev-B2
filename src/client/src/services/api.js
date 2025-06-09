@@ -20,6 +20,7 @@ export const loginUser = async (userData) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
             body: JSON.stringify(userData),
         });
@@ -29,7 +30,11 @@ export const loginUser = async (userData) => {
         }
 
         const data = await res.json();
-        if (data.token) localStorage.setItem('token', data.token);
+        console.log('Réponse de connexion:', data); // Log pour vérifier la réponse de l'API
+        if (data.token) {
+            console.log('Token reçu:', data.token); // Log pour vérifier le token reçu
+            localStorage.setItem('token', data.token);
+        }
         return data;
     } catch (error) {
         console.error('Erreur lors de la connexion:', error);

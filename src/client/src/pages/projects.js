@@ -19,16 +19,6 @@ function Projects() {
   const [adding, setAdding] = useState(false);
   const [recent, setRecent] = useState([]);
 
-  const images = [
-    '/assets/boards/img1.jpg',
-    '/assets/boards/img2.jpg',
-    '/assets/boards/img3.jpg',
-    '/assets/boards/img4.jpg',
-    '/assets/boards/img5.jpg',
-    '/assets/boards/img6.jpg',
-    '/assets/boards/img7.jpg',
-  ]; // Liste des chemins d'images locales
-
   // Charge la liste des récents au montage
   useEffect(() => {
     const rp = JSON.parse(localStorage.getItem('recentProjects') || '[]');

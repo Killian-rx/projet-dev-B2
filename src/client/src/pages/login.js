@@ -33,6 +33,7 @@ const Login = () => {
             } else {
                 setMessage('✅ Connexion réussie !');
                 navigate('/projects'); // Redirige vers la page des projets
+                localStorage.setItem('token', response.token); // Stocke le token dans le localStorage
             }
         } catch (err) {
             setError('Erreur lors de la connexion. Veuillez réessayer.');

@@ -198,6 +198,21 @@ html, body {
   background: #444;
 }
 
+.navbar-profile-menu button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  width: 100%;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.navbar-profile-menu button:hover {
+  background: #444;
+}
+
 .navbar-profile:hover .navbar-profile-menu {
   display: block;
 }

@@ -1,6 +1,7 @@
 // App.js
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { TokenProvider, TokenContext } from './context/TokenContext';
 import Login from './pages/login';
 import Register from './pages/register';
 import Home from './pages/home';
@@ -9,22 +10,24 @@ import Board from './pages/board';
 import Profile from './pages/profile';
 
 function App() {
-  const token = localStorage.getItem('token');
+  const { token } = useContext(TokenContext) || {};
 
   return (
-    <Router>
-      <Routes>
-        {/* Always accessible */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <TokenProvider>
+      <Router>
+        <Routes>
+          {/* Always accessible */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Protected routes */}
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/boards/:id" element={token ? <Board /> : <Navigate to="/login" replace />} />
-        <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+          {/* Protected routes */}
+          <Route path="/projects" element={token ? <Projects /> : <Navigate to="/login" replace />} />
+          <Route path="/boards/:id" element={token ? <Board /> : <Navigate to="/login" replace />} />
+          <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </TokenProvider>
   );
 }
 

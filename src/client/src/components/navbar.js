@@ -16,6 +16,9 @@ function NavBar({ onProjectCreated }) {
     '/assets/boards/img2.jpg',
     '/assets/boards/img3.jpg',
     '/assets/boards/img4.jpg',
+    '/assets/boards/img5.jpg',
+    '/assets/boards/img6.jpg',
+    '/assets/boards/img7.jpg',
   ]; // Liste des images disponibles
 
   useEffect(() => {
@@ -62,6 +65,30 @@ function NavBar({ onProjectCreated }) {
     }
   };
 
+  const handleLogout = async () => {
+    console.log('Bouton de déconnexion cliqué');
+    try {
+      const token = localStorage.getItem('token'); // Récupère le token depuis le localStorage
+      const response = await fetch('/auth/logout', { // Correction de l'URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Ajout du token dans les en-têtes
+        },
+      });
+
+      if (response.ok) {
+        console.log('Déconnexion réussie, suppression du token...');
+        localStorage.removeItem('token');
+        window.location.href = '/'; // Redirection après déconnexion
+      } else {
+        console.error('Erreur lors de la déconnexion, réponse non OK:', response.status);
+      }
+    } catch (error) {
+      console.error('Erreur réseau lors de la déconnexion:', error);
+    }
+  };
+
   const firstLetter = username.charAt(0).toUpperCase(); // Récupère la première lettre du pseudo
 
   return (
@@ -84,8 +111,8 @@ function NavBar({ onProjectCreated }) {
         </button>
         <div className="navbar-profile-menu">
           <Link to="/profile">Voir le profil</Link>
-          <Link to="/login">Déconnexion</Link>
-          <Link to="/login">Changer de compte</Link>
+          <button onClick={handleLogout}>Déconnexion</button>
+          <Link to="/switch-account">Changer de compte</Link>
         </div>
       </div>
 

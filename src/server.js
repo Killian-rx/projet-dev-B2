@@ -38,7 +38,7 @@ app.use('/cards', cardRoutes);
 app.use('/comments', commentRoutes);
 app.use('/labels', labelRoutes);
 app.use('/roles', roleRoutes);
-app.use('/api', projectRoutes); // Préfixe `/api` pour les routes
+app.use('/api', projectRoutes);
 
 
 const PORT = process.env.PORT || 5000;

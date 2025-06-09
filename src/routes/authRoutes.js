@@ -54,4 +54,16 @@ router.post('/register', authController.register);
  */
 router.post('/login', authController.login);
 
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Déconnexion utilisateur
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Déconnexion réussie
+ */
+router.post('/logout', authController.logout);
+
 module.exports = router;
