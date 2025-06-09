@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '../services/api';
 import '../css/profile.css';
+import Navbar from '../components/navbar';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -18,10 +19,10 @@ function Profile() {
     const fetchProfile = async () => {
       try {
         const data = await getUserProfile(token);
-        if (data.error) setError(data.error);
-        else setUser(data);
-      } catch {
-        setError('Erreur lors du chargement du profil');
+        console.log('user profile:', data); // log des données reçues
+        setUser(data);
+      } catch (err) {
+        setError(err.message || 'Erreur lors du chargement du profil');
       } finally {
         setLoading(false);
       }
@@ -32,15 +33,22 @@ function Profile() {
   if (loading) return <p className="profile-loading">Chargement du profil...</p>;
   if (error) return <p className="profile-error">❌ {error}</p>;
 
+  // Affiche les infos utilisateur
   return (
-    <div className="profile-container">
-      <h2>Mon profil</h2>
-      <div className="profile-info">
-        <p><strong>Nom :</strong> {user.name}</p>
-        <p><strong>Email :</strong> {user.email}</p>
-        <p><strong>Inscrit depuis :</strong> {new Date(user.created_at).toLocaleDateString()}</p>
+    <>
+      <Navbar/>
+      <div className="profile-container">
+        <h2>Mon profil</h2>
+        <div className="profile-info">
+          <p><strong>Pseudo :</strong> {user.name}</p>
+          <p><strong>Email :</strong> {user.email}</p>
+          <p>
+            <strong>Inscrit depuis :</strong>{' '}
+            {new Date(user.created_at).toLocaleDateString()}
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

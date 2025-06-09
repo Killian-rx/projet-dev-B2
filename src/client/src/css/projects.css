@@ -1,13 +1,23 @@
 .projects-container {
   font-family: Arial, sans-serif;
   padding: 1rem;
-  margin-top: 15vh;
+  width: 50%;
+  margin: auto;
+  margin-top: 5vh;
 }
 
 .projects-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.projects-header h1 {
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  background: #ffffff15;
+  border-radius: 8px;
+  margin-top: 5rem;
 }
 
 .projects-list ul {

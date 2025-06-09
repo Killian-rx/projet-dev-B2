@@ -17,6 +17,7 @@ function Projects() {
   const [selectedImage, setSelectedImage] = useState(''); // État pour l'image sélectionnée
   const [addError, setAddError] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [recent, setRecent] = useState([]);
 
   const images = [
     '/assets/boards/img1.jpg',
@@ -28,7 +29,17 @@ function Projects() {
     '/assets/boards/img7.jpg',
   ]; // Liste des chemins d'images locales
 
+  // Charge la liste des récents au montage
   useEffect(() => {
+    const rp = JSON.parse(localStorage.getItem('recentProjects') || '[]');
+    setRecent(rp);
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login'); // Redirige si le token est manquant
+      return;
+    }
     const fetchBoards = async () => {
         try {
             const data = await getBoards(token);
@@ -44,7 +55,16 @@ function Projects() {
         setLoading(false);
     };
     fetchBoards();
-  }, [token]);
+  }, [token, navigate]);
+
+  // Met à jour les projets récents
+  const updateRecent = (board) => {
+    setRecent(prev => {
+      const nxt = [board, ...prev.filter(b => b.id !== board.id)].slice(0, 5);
+      localStorage.setItem('recentProjects', JSON.stringify(nxt));
+      return nxt;
+    });
+  };
 
   const handleCreateClick = () => setShowForm(true);
   const handleCancel = () => { 
@@ -89,70 +109,31 @@ function Projects() {
   return (
     <div className="projects-container">
       <Navbar onCreateClick={handleCreateClick} onProjectCreated={handleProjectCreated} />
-      {showForm && (
-        <form onSubmit={handleSubmitNew} style={{ marginBottom: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Nom du projet"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            required
-            style={{ marginRight: '0.5rem' }}
-          />
-          <div className="image-gallery">
-            <p>Choisissez une image :</p>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              {images.map((image) => (
-                <img
-                  key={image}
-                  src={image}
-                  alt="Gallery"
-                  onClick={() => handleImageSelect(image)}
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    border: selectedImage === image ? '2px solid blue' : '1px solid gray',
-                    cursor: 'pointer',
-                  }}
-                />
-              ))}
-            </div>
+
+      {/* Projets récents */}
+      {recent.length > 0 && (
+        <div className="projects-section">
+          <div className="projects-header">
+            <h1>Projets récents</h1>
           </div>
-          <button type="submit" disabled={adding}>
-            {adding ? 'Création...' : 'Créer'}
-          </button>
-          <button type="button" onClick={handleCancel} style={{ marginLeft: '0.5rem' }}>
-            Annuler
-          </button>
-          {addError && <p style={{ color: 'red' }}>❌ {addError}</p>}
-        </form>
-      )}
-      <div className="projects-header">
-        <h1>Liste des projets</h1>
-      </div>
-      {boards.length === 0 ? (
-        <p>Aucun projet trouvé.</p>
-      ) : (
-        <div className="projects-list">
           <div className="cards-container">
-            {boards.map((board) => (
+            {recent.map(b => (
               <div
                 className="project-card"
-                key={board.id}
-                onClick={() => navigate(`/boards/${board.id}`)} // Navigue vers la page du projet
-                style={{ cursor: 'pointer' }} // Ajoute un curseur pour indiquer que la carte est cliquable
+                key={b.id}
+                onClick={() => { updateRecent(b); navigate(`/boards/${b.id}`); }}
               >
                 <div
                   className="project-card-image"
-                  style={{ backgroundImage: `url(${board.image})` }}
+                  style={{ backgroundImage: `url(${b.image})` }}
                 >
                   <div className="project-card-title">
-                    <h3>{board.name}</h3>
+                    <h3>{b.name}</h3>
                   </div>
                 </div>
                 <div className="project-card-footer">
                   <div className="project-members">
-                    {board.members?.map((member) => (
+                    {b.members?.map((member) => (
                       <span key={member.id} className="member-initial">
                         {member.name.charAt(0).toUpperCase()}
                       </span>
@@ -173,6 +154,49 @@ function Projects() {
           </div>
         </div>
       )}
+
+      {/* Tous les projets */}
+      <div className="projects-section">
+        <div className="projects-header">
+          <h1>Liste des projets</h1>
+        </div>
+        <div className="cards-container">
+          {boards.map(board => (
+            <div
+              className="project-card"
+              key={board.id}
+              onClick={() => { updateRecent(board); navigate(`/boards/${board.id}`); }}
+            >
+              <div
+                className="project-card-image"
+                style={{ backgroundImage: `url(${board.image})` }}
+              >
+                <div className="project-card-title">
+                  <h3>{board.name}</h3>
+                </div>
+              </div>
+              <div className="project-card-footer">
+                <div className="project-members">
+                  {board.members?.map((member) => (
+                    <span key={member.id} className="member-initial">
+                      {member.name.charAt(0).toUpperCase()}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  className="more-options"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Empêche la navigation si le bouton est cliqué
+                    console.log('Options clicked');
+                  }}
+                >
+                  ...
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

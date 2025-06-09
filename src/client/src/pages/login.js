@@ -1,5 +1,5 @@
 // pages/login.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // Removed useEffect as it is no longer used
 import { loginUser } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 import '../css/login.css';
@@ -8,9 +8,6 @@ import google from '../assets/google.png';
 import apple from '../assets/logo-apple.png'; // Import Apple logo if needed
 
 const Login = () => {
-    useEffect(() => {
-      localStorage.removeItem('token');
-    }, []);
     const [formData, setFormData] = useState({
         email: '',
         password: '',

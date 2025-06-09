@@ -5,7 +5,7 @@ import '../css/navbar.css';
 
 function NavBar({ onProjectCreated }) {
   const [username, setUsername] = useState('');
-  const [setUserId] = useState(''); // État pour stocker l'ID de l'utilisateur
+  const [userId, setUserId] = useState(null); // stocke l’ID de l’utilisateur
   const [showCreatePopup, setShowCreatePopup] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedImage, setSelectedImage] = useState('');
@@ -23,17 +23,15 @@ function NavBar({ onProjectCreated }) {
       try {
         const token = localStorage.getItem('token'); // Récupère le token depuis le localStorage
         const data = await getUserProfile(token); // Appelle l'API pour récupérer le profil utilisateur
-        if (data && data.name) {
-          setUsername(data.name); // Met à jour le pseudo
-          setUserId(data.id); // Stocke l'ID de l'utilisateur
-        }
+        if (data?.name) setUsername(data.name);
+        if (data?.id) setUserId(data.id);
       } catch (error) {
         console.error('Erreur lors de la récupération du profil utilisateur:', error);
       }
     };
 
     fetchUserProfile();
-  }, []);
+  }, []); // ne pas ajouter setUserId en dépendance
 
   const handleCreateProject = async () => {
     if (!newProjectName || !selectedImage) {
@@ -86,8 +84,8 @@ function NavBar({ onProjectCreated }) {
         </button>
         <div className="navbar-profile-menu">
           <Link to="/profile">Voir le profil</Link>
-          <Link to="/logout">Déconnexion</Link>
-          <Link to="/switch-account">Changer de compte</Link>
+          <Link to="/login">Déconnexion</Link>
+          <Link to="/login">Changer de compte</Link>
         </div>
       </div>
 
