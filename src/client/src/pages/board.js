@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/navbar'; // Importez le composant Navbar
-import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard } from '../services/api';
+import Navbar from '../components/navbar';
+import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard } from '../services/api';  // <-- Added updateCard and deleteCard
 import '../css/board.css'; // Assurez-vous d'avoir ce fichier CSS pour le style
+import ReactDOM from 'react-dom';  // <-- add this line
 
 function Board() {
   const { id } = useParams();
@@ -20,6 +21,8 @@ function Board() {
   const [error, setError] = useState(null);
   const [cardsByList, setCardsByList] = useState({});
   const [members, setMembers] = useState([]);
+  const [dropdown, setDropdown] = useState({ visible: false, x: 0, y: 0, listId: null });
+  const [cardDropdown, setCardDropdown] = useState({ visible: false, x: 0, y: 0, cardId: null });
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -122,6 +125,114 @@ function Board() {
     }
   };
 
+  // Handler for list update
+  const handleEditList = async (listId) => {
+    const newName = window.prompt('Entrez le nouveau nom de la liste :');
+    if (!newName) return;
+    try {
+      const updatedList = await updateList(listId, { name: newName }, token);
+      if (!updatedList.error) {
+        setLists((prevLists) => prevLists.map((list) => list.id === listId ? updatedList : list));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification de la liste:', error);
+    }
+  };
+
+  // Handler for list deletion
+  const handleDeleteList = async (listId) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette liste ?')) return;
+    try {
+      const response = await deleteList(listId, token);
+      if (!response.error) {
+        setLists((prevLists) => prevLists.filter((list) => list.id !== listId));
+        setCardsByList((prevCards) => {
+          const updatedCards = { ...prevCards };
+          delete updatedCards[listId];
+          return updatedCards;
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la liste:', error);
+    }
+  };
+
+  // Change the handleShowDropdown function as follows:
+  const handleShowDropdown = (e, listId) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    console.log("Dropdown triggered for list:", listId, rect); // Debug log
+    setDropdown({
+      visible: true,
+      x: rect.left + window.scrollX, 
+      y: rect.bottom + window.scrollY, // position below the button
+      listId: listId,
+    });
+  };
+
+  const handleCloseDropdown = () => setDropdown({ visible: false, x: 0, y: 0, listId: null });
+
+  useEffect(() => {
+    const onClickOutside = () => {
+      if (dropdown.visible) handleCloseDropdown();
+    };
+    if (dropdown.visible) document.addEventListener('click', onClickOutside);
+    return () => document.removeEventListener('click', onClickOutside);
+  }, [dropdown.visible]);
+
+  // Replace the stub card handlers with the following:
+  // Import updateCard and deleteCard from the API module in the imports section:
+  // ...existing imports...
+  // Ensure your import line now includes updateCard and deleteCard:
+  // import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard } from '../services/api';
+
+  const handleEditCard = async (cardId) => {
+    const newTitle = window.prompt('Entrez le nouveau titre pour la carte:');
+    if (!newTitle) return;
+    try {
+      await updateCard(cardId, { title: newTitle }, token);
+      // Reload the page to fetch updated data
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur lors de la modification de la carte", error);
+      alert('Une erreur est survenue lors de la modification de la carte.');
+    }
+  };
+
+  const handleDeleteCard = async (cardId) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')) return;
+    try {
+      await deleteCard(cardId, token);
+      // Reload the page to reflect deletion
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la carte", error);
+      alert('Une erreur est survenue lors de la suppression de la carte.');
+    }
+  };
+
+  // Add new handlers for card dropdown:
+  const handleShowCardDropdown = (e, cardId) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCardDropdown({
+      visible: true,
+      x: rect.left + window.scrollX,
+      y: rect.bottom + window.scrollY,
+      cardId: cardId,
+    });
+  };
+
+  const handleCloseCardDropdown = () => setCardDropdown({ visible: false, x: 0, y: 0, cardId: null });
+
+  useEffect(() => {
+    const onClickOutsideCard = () => {
+      if (cardDropdown.visible) handleCloseCardDropdown();
+    };
+    if (cardDropdown.visible) document.addEventListener('click', onClickOutsideCard);
+    return () => document.removeEventListener('click', onClickOutsideCard);
+  }, [cardDropdown.visible]);
+
   if (loading) return <p>Chargement du projet...</p>;
   if (error) return <p>❌ {error}</p>;
 
@@ -210,7 +321,15 @@ function Board() {
           <div key={list.id} className="list-column">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>{list.name}</h3>
-              <button className="edit-button">⋯</button>
+              <div>
+                <button
+                  className="edit-button"
+                  onClick={(e) => handleShowDropdown(e, list.id)}
+                >
+                  ⋯
+                </button>
+                {/* Remove inline dropdown from here */}
+              </div>
             </div>
             {/* Cards */}
             <div>
@@ -218,7 +337,9 @@ function Board() {
                 <div key={card.id} className="card-item">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>{card.title}</span>
-                    <button className="edit-button">⋯</button>
+                    <button className="edit-button" onClick={(e) => handleShowCardDropdown(e, card.id)}>
+                      ⋯
+                    </button>
                   </div>
                 </div>
               ))}
@@ -227,13 +348,51 @@ function Board() {
             <button onClick={()=>handleAddCard(list.id)} className="add-card-button">+ Ajouter une carte</button>
           </div>
         ))}
-          <button
-            className="add-list-column-button"
-            onClick={handleShowListForm}
-          >
-            + Ajouter une autre liste
-          </button>
+        <button
+          className="add-list-column-button"
+          onClick={handleShowListForm}
+        >
+          + Ajouter une autre liste
+        </button>
       </div>
+      {/* Render dropdown via portal */}
+      {dropdown.visible && ReactDOM.createPortal(
+        <div className="dropdown-menu" 
+          style={{ 
+            position: 'fixed', 
+            top: dropdown.y + 'px', 
+            left: dropdown.x + 'px',
+            display: 'block' // force the dropdown to be visible
+          }}
+        >
+          <button onClick={() => { handleEditList(dropdown.listId); handleCloseDropdown(); }}>
+            Modifier
+          </button>
+          <button onClick={() => { handleDeleteList(dropdown.listId); handleCloseDropdown(); }}>
+            Supprimer
+          </button>
+        </div>,
+        document.body
+      )}
+      {/* Render card dropdown via portal */}
+      {cardDropdown.visible && ReactDOM.createPortal(
+        <div className="dropdown-menu" 
+          style={{ 
+            position: 'fixed', 
+            top: cardDropdown.y + 'px', 
+            left: cardDropdown.x + 'px',
+            display: 'block' // force visibility
+          }}
+        >
+          <button onClick={() => { handleEditCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
+            Modifier
+          </button>
+          <button onClick={() => { handleDeleteCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
+            Supprimer
+          </button>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

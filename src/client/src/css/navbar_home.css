@@ -7,11 +7,11 @@ html, body {
 }
 
 /* Existing navbar styles */
-.navbar {
+.navbar_home {
   position: fixed; /* Fix navbar to top */
   width: 85%;
   margin: auto;
-  top: 30px; /* Adjusted to avoid overlap with other content */
+  top: 0; /* Adjusted to avoid overlap with other content */
   left: 0;
   right: 0;
   display: flex;

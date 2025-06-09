@@ -33,14 +33,37 @@ const cardController = {
     res.status(200).json({ message: `Carte avec l'id ${id}` });
   },
 
-  updateCard: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Carte ${id} mise à jour` });
+  updateCard: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, description } = req.body;
+      // Update the card in the database using Sequelize update.
+      const [updatedRows, [updatedCard]] = await Card.update(
+        { title, description },
+        { where: { id }, returning: true }
+      );
+      if (updatedRows === 0) {
+        return res.status(404).json({ error: 'Carte non trouvée.' });
+      }
+      res.status(200).json(updatedCard);
+    } catch (error) {
+      console.error('Erreur updateCard:', error);
+      res.status(500).json({ error: 'Erreur serveur lors de la mise à jour de la carte.' });
+    }
   },
 
-  deleteCard: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Carte ${id} supprimée` });
+  deleteCard: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedRows = await Card.destroy({ where: { id } });
+      if (deletedRows === 0) {
+        return res.status(404).json({ error: 'Carte non trouvée.' });
+      }
+      res.status(200).json({ message: `Carte ${id} supprimée` });
+    } catch (error) {
+      console.error('Erreur deleteCard:', error);
+      res.status(500).json({ error: 'Erreur serveur lors de la suppression de la carte.' });
+    }
   },
 
   assignUserToCard: (req, res) => {

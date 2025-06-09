@@ -3,17 +3,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/navbar_home.css';
 
-function NavBar() {
+function NavBarHome() {
   const [open, setOpen] = useState(false);
   return (
-    <nav className="navbar">
+    <nav className="navbar_home">
       <div className="navbar-logo">
         <span className="navbar-logo-text">Organix</span>
-      </div>
-      {/* Inline links for desktop */}
-      <div className="navbar-links">
-        <Link to="/projects">En savoir plus</Link>
-        <Link to="/profile">A propos</Link>
       </div>
 
       <button className="navbar-auth">
@@ -33,4 +28,4 @@ function NavBar() {
   );
 }
 
-export default NavBar;
+export default NavBarHome;

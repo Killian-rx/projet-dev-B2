@@ -2,7 +2,6 @@
   font-family: Arial, sans-serif;
   min-height: 100vh; /* Assure que le conteneur couvre toute la hauteur de la page */
   color: white; /* Texte blanc pour contraster avec l'image de fond */
-  padding-top: 3rem; /* Ajoute un espace pour éviter que le contenu soit masqué par la navbar */
   position: relative; /* Position relative pour les éléments internes */
 }
 
@@ -57,6 +56,7 @@
   max-height: 100%;
   overflow-y: auto;
   color: #d6d6d6;
+  position: relative; /* Ensure dropdown is positioned relative to the list column */
 }
 
 .list-column h3 {
@@ -69,6 +69,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative; /* Add relative positioning for dropdown anchoring */
 }
 
 .list-header span {
@@ -148,7 +149,7 @@
   background-color: rgba(0, 0, 0, 0.4); /* Fond semi-transparent pour contraster avec l'image */
   padding: 0.8rem 2rem;
   position: sticky;
-  top: 2rem; /* Place la barre en dessous de la navbar principale */
+  top: 3rem; /* Place la barre en dessous de la navbar principale */
   z-index: 900;
   text-align: center;
 }
@@ -218,6 +219,10 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 8px;
+  margin-top: 3rem; /* Ajuste la position pour qu'elle soit sous la navbar du projet */
+  max-height: calc(100vh - 200px); /* Ajuste la hauteur pour laisser de l'espace pour les autres éléments */
+  min-height: 100px; /* Assure une hauteur minimale pour les listes */
+  overflow-x: auto; /* Permet le défilement horizontal si nécessaire */
 }
 
 .create-project-button {
@@ -297,4 +302,39 @@
 
 .popup button:last-of-type:hover {
   background: #bbb;
+}
+
+.dropdown-menu {
+  display: none; /* Hidden by default */
+  position: absolute;
+  width: 5vw;
+  top: 50%; /* Vertically centered relative to the list header */
+  left: 100%; /* Immediately to the right of list name */
+  transform: translate(10px, -50%); /* Add horizontal gap and vertical centering */
+  background: white;
+  border: 1px solid gray;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* Ensure it's above everything */
+  min-width: 120px;
+  padding: 0.5rem 0;
+  overflow: visible; /* Allow all content to be visible */
+  white-space: nowrap; /* Prevent text from wrapping */
+  text-align: center;
+  align-items: center;
+}
+
+.dropdown-menu button {
+  display: block; /* Ensure each button occupies full width */
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background: #f4f4f4;
 }
