@@ -125,7 +125,7 @@ function Projects() {
                   <div className="project-members">
                     {b.members?.map((member) => (
                       <span key={member.id} className="member-initial">
-                        {member.name.charAt(0).toUpperCase()}
+                        {member?.name?.charAt(0).toUpperCase() || '?'}
                       </span>
                     ))}
                   </div>
@@ -169,7 +169,7 @@ function Projects() {
                 <div className="project-members">
                   {board.members?.map((member) => (
                     <span key={member.id} className="member-initial">
-                      {member.name.charAt(0).toUpperCase()}
+                      {member?.name?.charAt(0).toUpperCase() || '?'}
                     </span>
                   ))}
                 </div>

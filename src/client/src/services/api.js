@@ -74,7 +74,7 @@ export const getBoard = async (id, token) => {
 
 export const createBoard = async (boardData, token) => {
     try {
-        const response = await fetch(`${API_URL}/api/projects`, { // Assurez-vous que l'URL correspond à la route backend
+        const response = await fetch(`${API_URL}/boards`, { // Assurez-vous que l'URL correspond à la route backend
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
