@@ -1,12 +1,14 @@
 // 📁 routes/cardRoutes.js
 const express = require('express');
 const router = express.Router();
+const auth = require('../middlewares/authMiddleware');
 const cardController = require('../controllers/cardController');
+
+router.use(auth);
 
 // CRUD des cartes
 router.get('/lists/:listId/cards', cardController.getCardsByList);
 router.post('/lists/:listId/cards', cardController.createCard);
-router.get('/:id', cardController.getCardById);
 router.put('/:id', cardController.updateCard);
 router.delete('/:id', cardController.deleteCard);
 

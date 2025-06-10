@@ -36,13 +36,18 @@ const cardController = {
   updateCard: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description } = req.body;
-      // Update the card in the database using Sequelize update.
-      const [updatedRows, [updatedCard]] = await Card.update(
-        { title, description },
+      const { title, description, list_id, position } = req.body;
+      // Construire dynamiquement les champs à mettre à jour
+      const updates = {};
+      if (title !== undefined) updates.title = title;
+      if (description !== undefined) updates.description = description;
+      if (list_id !== undefined) updates.list_id = list_id;
+      if (position !== undefined) updates.position = position;
+      const [count, [updatedCard]] = await Card.update(
+        updates,
         { where: { id }, returning: true }
       );
-      if (updatedRows === 0) {
+      if (count === 0) {
         return res.status(404).json({ error: 'Carte non trouvée.' });
       }
       res.status(200).json(updatedCard);

@@ -39,7 +39,8 @@ app.use('/comments', commentRoutes);
 app.use('/labels', labelRoutes);
 app.use('/roles', roleRoutes);
 app.use('/api', projectRoutes);
-
+app.use('/cards', cardRoutes);
+app.use('/api', commentRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));

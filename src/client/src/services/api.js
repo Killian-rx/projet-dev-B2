@@ -192,14 +192,14 @@ export const deleteCard = async (cardId, token) => {
 
 // --- COMMENTS ---
 export const getCommentsByCard = async (cardId, token) => {
-  const res = await fetch(`${API_URL}/cards/${cardId}/comments`, {
+  const res = await fetch(`${API_URL}/api/cards/${cardId}/comments`, {
     headers: jsonHeaders(token),
   });
   return await res.json();
 };
 
 export const createComment = async (cardId, data, token) => {
-  const res = await fetch(`${API_URL}/cards/${cardId}/comments`, {
+  const res = await fetch(`${API_URL}/api/cards/${cardId}/comments`, {
     method: "POST",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -208,7 +208,7 @@ export const createComment = async (cardId, data, token) => {
 };
 
 export const updateComment = async (commentId, data, token) => {
-  const res = await fetch(`${API_URL}/comments/${commentId}`, {
+  const res = await fetch(`${API_URL}/api/comments/${commentId}`, {
     method: "PUT",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -217,7 +217,7 @@ export const updateComment = async (commentId, data, token) => {
 };
 
 export const deleteComment = async (commentId, token) => {
-  const res = await fetch(`${API_URL}/comments/${commentId}`, {
+  const res = await fetch(`${API_URL}/api/comments/${commentId}`, {
     method: "DELETE",
     headers: jsonHeaders(token),
   });

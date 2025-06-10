@@ -88,6 +88,9 @@
   border-radius: 3px;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-item:hover {
@@ -95,8 +98,9 @@
 }
 
 .card-item span {
-  display: block;
-  margin-left: 0.5rem;
+  /* supprime le margin-left qui forçait le bouton en dessous */
+  margin: 0;
+  /* conserve la couleur */
   color: #d6d6d6; /* Couleur du texte des cartes */
 }
 
@@ -343,4 +347,53 @@
 
 .dropdown-menu button:hover {
   background: #f4f4f4;
+}
+
+.comment-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 2000;
+}
+.comment-modal {
+  background: #fff;
+  color: #000;
+  width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.comment-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+.comment-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+.comment-form textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.comment-form button {
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.comment-form button[type="submit"] {
+  background: #026aa7;
+  color: #fff;
+}
+.comment-form button[type="button"] {
+  background: #ccc;
+  color: #000;
 }

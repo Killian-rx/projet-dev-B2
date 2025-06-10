@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
-import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard } from '../services/api';  // <-- Added updateCard and deleteCard
+import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard, getCommentsByCard, createComment } from '../services/api';  // <-- Added updateCard and deleteCard
 import '../css/board.css'; // Assurez-vous d'avoir ce fichier CSS pour le style
 import ReactDOM from 'react-dom';  // <-- add this line
 
@@ -23,6 +23,11 @@ function Board() {
   const [members, setMembers] = useState([]);
   const [dropdown, setDropdown] = useState({ visible: false, x: 0, y: 0, listId: null });
   const [cardDropdown, setCardDropdown] = useState({ visible: false, x: 0, y: 0, cardId: null });
+  const [dragData, setDragData] = useState(null);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -233,6 +238,52 @@ function Board() {
     return () => document.removeEventListener('click', onClickOutsideCard);
   }, [cardDropdown.visible]);
 
+  const handleDragStart = (e, cardId, fromListId) => {
+    e.dataTransfer.setData('text/plain', cardId);
+    setDragData({ cardId, fromListId });
+  };
+
+  const handleDrop = async (e, toListId) => {
+    e.preventDefault();
+    if (!dragData) return;
+    const { cardId, fromListId } = dragData;
+    // appel API pour mettre à jour list_id
+    await updateCard(cardId, { list_id: toListId }, token);
+    // mise à jour locale
+    setCardsByList(prev => {
+      const updated = { ...prev };
+      const moving = updated[fromListId].find(c => c.id === Number(cardId));
+      updated[fromListId] = updated[fromListId].filter(c => c.id !== Number(cardId));
+      updated[toListId] = [...(updated[toListId]||[]), { ...moving, list_id: toListId }];
+      return updated;
+    });
+    setDragData(null);
+  };
+
+  const handleOpenComments = async (cardId) => {
+    const list = await getCommentsByCard(cardId, token);
+    setComments(Array.isArray(list) ? list : []);
+    setSelectedCardId(cardId);
+    setCommentText('');
+    setShowCommentModal(true);
+  };
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    const newComment = await createComment(selectedCardId, { content: commentText }, token);
+    if (!newComment.error) {
+      setComments(prev => [...prev, newComment]);
+      setCommentText('');
+    }
+  };
+
+  const handleCloseComments = () => {
+    setShowCommentModal(false);
+    setSelectedCardId(null);
+    setComments([]);
+  };
+
   if (loading) return <p>Chargement du projet...</p>;
   if (error) return <p>❌ {error}</p>;
 
@@ -317,33 +368,28 @@ function Board() {
       )}
       {/* Lists Container */}
       <div className="lists-container">
-        {lists.map((list) => (
-          <div key={list.id} className="list-column">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>{list.name}</h3>
-              <div>
-                <button
-                  className="edit-button"
-                  onClick={(e) => handleShowDropdown(e, list.id)}
-                >
+        {lists.map(list => (
+          <div
+            key={list.id}
+            className="list-column"
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => handleDrop(e, list.id)}
+          >
+            <h3>{list.name}</h3>
+            {(cardsByList[list.id] || []).map(card => (
+              <div
+                key={card.id}
+                className="card-item"
+                draggable
+                onDragStart={e => handleDragStart(e, card.id, list.id)}
+                onClick={() => handleOpenComments(card.id)}   // <-- ouvre modal
+              >
+                <span>{card.title}</span>
+                <button className="edit-button" onClick={(e) => { e.stopPropagation(); handleShowCardDropdown(e, card.id); }}>
                   ⋯
                 </button>
-                {/* Remove inline dropdown from here */}
               </div>
-            </div>
-            {/* Cards */}
-            <div>
-              {(cardsByList[list.id] || []).map(card => (
-                <div key={card.id} className="card-item">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>{card.title}</span>
-                    <button className="edit-button" onClick={(e) => handleShowCardDropdown(e, card.id)}>
-                      ⋯
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
             {/* Add card placeholder/option */}
             <button onClick={()=>handleAddCard(list.id)} className="add-card-button">+ Ajouter une carte</button>
           </div>
@@ -390,6 +436,31 @@ function Board() {
           <button onClick={() => { handleDeleteCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
             Supprimer
           </button>
+        </div>,
+        document.body
+      )}
+      {showCommentModal && ReactDOM.createPortal(
+        <div className="comment-modal-overlay" onClick={handleCloseComments}>
+          <div className="comment-modal" onClick={e=>e.stopPropagation()}>
+            <h3>Commentaires</h3>
+            <div className="comment-list">
+              {comments.map(c => (
+                <div key={c.id} className="comment-item">
+                  <strong>{c.user_id}</strong>: {c.content}
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleSubmitComment} className="comment-form">
+              <textarea
+                value={commentText}
+                onChange={e=>setCommentText(e.target.value)}
+                placeholder="Écrire un commentaire..."
+                required
+              />
+              <button type="submit">Envoyer</button>
+              <button type="button" onClick={handleCloseComments}>Fermer</button>
+            </form>
+          </div>
         </div>,
         document.body
       )}
