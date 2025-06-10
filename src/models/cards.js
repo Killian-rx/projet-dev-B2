@@ -2,6 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const List = require('./lists');  // Importer le modèle List
 const User = require('./users');  // Importer le modèle User
+const Label = require('./labels');
+const CardLabel = require('./card_labels');
 
 const Card = sequelize.define('Card', {
   id: {
@@ -46,5 +48,8 @@ const Card = sequelize.define('Card', {
 Card.belongsTo(List, { foreignKey: 'list_id' });
 // Relation : Une carte est assignée à un utilisateur (facultatif)
 Card.belongsTo(User, { foreignKey: 'assigned_user_id', targetKey: 'id' });
+// Association many-to-many entre Card et Label
+Card.belongsToMany(Label, { through: CardLabel, foreignKey: 'card_id', otherKey: 'label_id' });
+Label.belongsToMany(Card, { through: CardLabel, foreignKey: 'label_id', otherKey: 'card_id' });
 
 module.exports = Card;

@@ -192,14 +192,14 @@ export const deleteCard = async (cardId, token) => {
 
 // --- COMMENTS ---
 export const getCommentsByCard = async (cardId, token) => {
-  const res = await fetch(`${API_URL}/api/cards/${cardId}/comments`, {
+  const res = await fetch(`${API_URL}/comments/cards/${cardId}/comments`, {
     headers: jsonHeaders(token),
   });
   return await res.json();
 };
 
 export const createComment = async (cardId, data, token) => {
-  const res = await fetch(`${API_URL}/api/cards/${cardId}/comments`, {
+  const res = await fetch(`${API_URL}/comments/cards/${cardId}/comments`, {
     method: "POST",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -208,7 +208,7 @@ export const createComment = async (cardId, data, token) => {
 };
 
 export const updateComment = async (commentId, data, token) => {
-  const res = await fetch(`${API_URL}/api/comments/${commentId}`, {
+  const res = await fetch(`${API_URL}/comments/${commentId}`, {
     method: "PUT",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -217,7 +217,7 @@ export const updateComment = async (commentId, data, token) => {
 };
 
 export const deleteComment = async (commentId, token) => {
-  const res = await fetch(`${API_URL}/api/comments/${commentId}`, {
+  const res = await fetch(`${API_URL}/comments/${commentId}`, {
     method: "DELETE",
     headers: jsonHeaders(token),
   });
@@ -226,14 +226,13 @@ export const deleteComment = async (commentId, token) => {
 
 // --- LABELS ---
 export const getLabelsByBoard = async (boardId, token) => {
-  const res = await fetch(`${API_URL}/boards/${boardId}/labels`, {
+  const res = await fetch(`${API_URL}/labels/boards/${boardId}/labels`, {
     headers: jsonHeaders(token),
   });
   return await res.json();
 };
-
 export const createLabel = async (boardId, data, token) => {
-  const res = await fetch(`${API_URL}/boards/${boardId}/labels`, {
+  const res = await fetch(`${API_URL}/labels/boards/${boardId}/labels`, {
     method: "POST",
     headers: jsonHeaders(token),
     body: JSON.stringify(data),
@@ -241,17 +240,16 @@ export const createLabel = async (boardId, data, token) => {
   return await res.json();
 };
 
-export const updateLabel = async (labelId, data, token) => {
-  const res = await fetch(`${API_URL}/labels/${labelId}`, {
-    method: "PUT",
+// --- ASSIGN / REMOVE LABEL ON CARD ---
+export const assignLabelToCard = async (cardId, labelId, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}/labels/${labelId}`, {
+    method: "POST",
     headers: jsonHeaders(token),
-    body: JSON.stringify(data),
   });
   return await res.json();
 };
-
-export const deleteLabel = async (labelId, token) => {
-  const res = await fetch(`${API_URL}/labels/${labelId}`, {
+export const removeLabelFromCard = async (cardId, labelId, token) => {
+  const res = await fetch(`${API_URL}/cards/${cardId}/labels/${labelId}`, {
     method: "DELETE",
     headers: jsonHeaders(token),
   });

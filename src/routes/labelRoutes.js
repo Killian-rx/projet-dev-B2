@@ -10,9 +10,9 @@ router.get('/boards/:boardId/labels', labelController.getLabelsByBoard);
 router.post('/boards/:boardId/labels', labelController.createLabel);
 
 // Modifier un label
-router.put('/:id', labelController.updateLabel);
+router.put('/boards/:boardId/labels/:id', labelController.updateLabel);
 
 // Supprimer un label
-router.delete('/:id', labelController.deleteLabel);
+router.delete('/boards/:boardId/labels/:id', labelController.deleteLabel);
 
 module.exports = router;

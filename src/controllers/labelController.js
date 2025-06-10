@@ -1,24 +1,33 @@
 // 📁 controllers/labelController.js
-const labelController = {
-  getLabelsByBoard: (req, res) => {
-    const { boardId } = req.params;
-    res.status(200).json({ message: `Labels du board ${boardId}` });
-  },
+const Label = require('../models/labels');
 
-  createLabel: (req, res) => {
-    const { boardId } = req.params;
-    res.status(201).json({ message: `Label créé dans le board ${boardId}` });
-  },
-
-  updateLabel: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Label ${id} mis à jour` });
-  },
-
-  deleteLabel: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Label ${id} supprimé` });
+exports.getLabelsByBoard = async (req, res) => {
+  try {
+    const labels = await Label.findAll(); // no board_id filter
+    res.json(labels);
+  } catch (error) {
+    console.error('Erreur getLabelsByBoard:', error);
+    res.status(500).json({ error: 'Erreur serveur lors de la récupération des labels' });
   }
 };
 
-module.exports = labelController;
+exports.createLabel = async (req, res) => {
+  try {
+    const { name, color } = req.body;
+    const label = await Label.create({ name, color }); // no board_id
+    res.status(201).json(label);
+  } catch (error) {
+    console.error('Erreur createLabel:', error);
+    res.status(500).json({ error: 'Erreur serveur lors de la création du label' });
+  }
+};
+
+exports.updateLabel = (req, res) => {
+  const { id } = req.params;
+  res.status(200).json({ message: `Label ${id} mis à jour` });
+};
+
+exports.deleteLabel = (req, res) => {
+  const { id } = req.params;
+  res.status(200).json({ message: `Label ${id} supprimé` });
+};

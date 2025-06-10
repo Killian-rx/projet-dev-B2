@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
-import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard, getCommentsByCard, createComment } from '../services/api';  // <-- Added updateCard and deleteCard
+import { getBoard, getListsByBoard, createList, getCardsByList, createCard, getBoardMembers, createBoard, updateList, deleteList, updateCard, deleteCard, getCommentsByCard, createComment, getLabelsByBoard, createLabel, assignLabelToCard, removeLabelFromCard } from '../services/api';  // <-- Added updateCard and deleteCard
 import '../css/board.css'; // Assurez-vous d'avoir ce fichier CSS pour le style
 import ReactDOM from 'react-dom';  // <-- add this line
 
@@ -28,6 +28,10 @@ function Board() {
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [labels, setLabels] = useState([]);
+  const [showLabelModal, setShowLabelModal] = useState(false);
+  const [labelForm, setLabelForm] = useState({ name: '', color: '#ff0000' });
+  const [cardLabels, setCardLabels] = useState([]); // id[] for selected card
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -65,6 +69,9 @@ function Board() {
           // fetch members
           const mem = await getBoardMembers(id, token);
           setMembers(Array.isArray(mem) ? mem : []);
+          // fetch labels
+          const lb = await getLabelsByBoard(id, token);
+          setLabels(Array.isArray(lb) ? lb : []);
         }
       } catch {
         setError('Erreur lors du chargement du projet');
@@ -284,6 +291,29 @@ function Board() {
     setComments([]);
   };
 
+  const handleOpenLabelModal = (cardId, existing=[]) => {
+    setSelectedCardId(cardId);
+    setCardLabels(existing.map(l=>l.id));
+    setShowLabelModal(true);
+  };
+
+  const handleToggleLabel = async (labelId) => {
+    if (cardLabels.includes(labelId)) {
+      await removeLabelFromCard(selectedCardId, labelId, token);
+      setCardLabels(prev=>prev.filter(id=>id!==labelId));
+    } else {
+      await assignLabelToCard(selectedCardId, labelId, token);
+      setCardLabels(prev=>[...prev, labelId]);
+    }
+  };
+
+  const handleCreateNewLabel = async (e) => {
+    e.preventDefault();
+    const nl = await createLabel(id, labelForm, token);
+    if (nl.id) setLabels(prev=>[...prev, nl]);
+    setLabelForm({ name:'', color:'#ff0000' });
+  };
+
   if (loading) return <p>Chargement du projet...</p>;
   if (error) return <p>❌ {error}</p>;
 
@@ -375,7 +405,18 @@ function Board() {
             onDragOver={e => e.preventDefault()}
             onDrop={e => handleDrop(e, list.id)}
           >
-            <h3>{list.name}</h3>
+            <div className="list-header">
+              <h3>{list.name}</h3>
+              <button
+                className="edit-button"
+                onClick={e => {
+                  e.stopPropagation();
+                  handleShowDropdown(e, list.id);
+                }}
+              >
+                ⋯
+              </button>
+            </div>
             {(cardsByList[list.id] || []).map(card => (
               <div
                 key={card.id}
@@ -385,7 +426,22 @@ function Board() {
                 onClick={() => handleOpenComments(card.id)}   // <-- ouvre modal
               >
                 <span>{card.title}</span>
-                <button className="edit-button" onClick={(e) => { e.stopPropagation(); handleShowCardDropdown(e, card.id); }}>
+                {/* affichage des labels */}
+                <div className="card-labels">
+                  {(card.labels||[]).map(l=>(
+                    <span key={l.id} className="card-label" style={{background:l.color}}>{l.name}</span>
+                  ))}
+                </div>
+                <button
+                  className="edit-button"
+                  onClick={e=>{e.stopPropagation(); handleOpenLabelModal(card.id, card.labels||[])}}
+                >
+                  🎨
+                </button>
+                <button
+                  className="edit-button"
+                  onClick={e=>{e.stopPropagation(); handleShowCardDropdown(e,card.id)}}
+                >
                   ⋯
                 </button>
               </div>
@@ -460,6 +516,42 @@ function Board() {
               <button type="submit">Envoyer</button>
               <button type="button" onClick={handleCloseComments}>Fermer</button>
             </form>
+          </div>
+        </div>,
+        document.body
+      )}
+      {showLabelModal && ReactDOM.createPortal(
+        <div className="label-modal-overlay" onClick={()=>setShowLabelModal(false)}>
+          <div className="label-modal" onClick={e=>e.stopPropagation()}>
+            <h3>Gérer les labels</h3>
+            <div className="label-list">
+              {labels.map(l=>(
+                <label key={l.id}>
+                  <input
+                    type="checkbox"
+                    checked={cardLabels.includes(l.id)}
+                    onChange={()=>handleToggleLabel(l.id)}
+                  />
+                  <span className="label-pill" style={{background:l.color}}>{l.name}</span>
+                </label>
+              ))}
+            </div>
+            <form onSubmit={handleCreateNewLabel} className="new-label-form">
+              <input
+                type="text"
+                placeholder="Nom du label"
+                value={labelForm.name}
+                onChange={e=>setLabelForm(f=>({...f,name:e.target.value}))}
+                required
+              />
+              <input
+                type="color"
+                value={labelForm.color}
+                onChange={e=>setLabelForm(f=>({...f,color:e.target.value}))}
+              />
+              <button type="submit">Créer label</button>
+            </form>
+            <button onClick={()=>setShowLabelModal(false)}>Fermer</button>
           </div>
         </div>,
         document.body

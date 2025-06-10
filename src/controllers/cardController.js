@@ -37,19 +37,29 @@ const cardController = {
     try {
       const { id } = req.params;
       const { title, description, list_id, position } = req.body;
-      // Construire dynamiquement les champs à mettre à jour
       const updates = {};
       if (title !== undefined) updates.title = title;
       if (description !== undefined) updates.description = description;
       if (list_id !== undefined) updates.list_id = list_id;
       if (position !== undefined) updates.position = position;
-      const [count, [updatedCard]] = await Card.update(
+
+      const [count, returned] = await Card.update(
         updates,
         { where: { id }, returning: true }
       );
+
       if (count === 0) {
         return res.status(404).json({ error: 'Carte non trouvée.' });
       }
+
+      // returned peut être un nombre (MySQL/SQLite) ou un tableau (Postgres)
+      let updatedCard;
+      if (Array.isArray(returned) && returned.length) {
+        updatedCard = returned[0];
+      } else {
+        updatedCard = await Card.findByPk(id);
+      }
+
       res.status(200).json(updatedCard);
     } catch (error) {
       console.error('Erreur updateCard:', error);

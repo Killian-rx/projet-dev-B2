@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/authMiddleware');
 const boardController = require('../controllers/boardController');
+const labelController = require('../controllers/labelController'); // <--- ajouté
 
 // Apply auth to all board routes
 router.use(auth);
@@ -23,5 +24,9 @@ router.delete('/:id/members/:userId', boardController.removeBoardMember);
 router.post('/:id/roles', boardController.assignRoleToUser);
 router.put('/:id/roles/:userId', boardController.updateUserRole);
 router.delete('/:id/roles/:userId', boardController.removeUserRole);
+
+// Gestion des labels
+router.get('/:id/labels', labelController.getLabelsByBoard);    // récupère tous les labels
+router.post('/:id/labels', labelController.createLabel);        // crée un nouveau label
 
 module.exports = router;

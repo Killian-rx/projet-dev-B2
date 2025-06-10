@@ -15,7 +15,7 @@ router.delete('/:id', cardController.deleteCard);
 // Assignation d'un utilisateur à une carte
 router.put('/:id/assign/:userId', cardController.assignUserToCard);
 
-// Gestion des labels sur une carte
+// Assign / remove label on a card
 router.post('/:id/labels/:labelId', cardController.addLabelToCard);
 router.delete('/:id/labels/:labelId', cardController.removeLabelFromCard);
 
