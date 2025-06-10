@@ -1,12 +1,21 @@
 // 📁 controllers/cardController.js
 const Card = require('../models/cards');
+const Label = require('../models/labels');
 
 const cardController = {
   getCardsByList: async (req, res) => {
     try {
       const { listId } = req.params;
-      const cards = await Card.findAll({ where: { list_id: listId }, order: [['position', 'ASC']] });
-      res.json(cards);
+      const cards = await Card.findAll({
+        where: { list_id: listId },
+        order: [['position', 'ASC']],
+        include: [{ model: Label, through: { attributes: [] } }]
+      });
+      const result = cards.map(card => {
+        const obj = card.toJSON();
+        return { ...obj, labels: obj.Labels || [] };
+      });
+      res.json(result);
     } catch (error) {
       console.error('Erreur getCardsByList:', error);
       res.status(500).json({ error: 'Erreur serveur lors de la récupération des cartes' });

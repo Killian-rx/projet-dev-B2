@@ -5,7 +5,7 @@ const CardLabel = sequelize.define('CardLabel', {
   card_id: { type: DataTypes.INTEGER, primaryKey: true },
   label_id: { type: DataTypes.INTEGER, primaryKey: true }
 }, {
-  tableName: 'CardLabels',
+  tableName: 'card_labels',
   timestamps: false
 });
 

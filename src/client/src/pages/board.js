@@ -31,7 +31,8 @@ function Board() {
   const [labels, setLabels] = useState([]);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelForm, setLabelForm] = useState({ name: '', color: '#ff0000' });
-  const [cardLabels, setCardLabels] = useState([]); // id[] for selected card
+  const [cardLabels, setCardLabels] = useState([]);      // id[] pour la carte courante
+  const [originalCardLabels, setOriginalCardLabels] = useState([]); // snapshot initial
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -293,18 +294,31 @@ function Board() {
 
   const handleOpenLabelModal = (cardId, existing=[]) => {
     setSelectedCardId(cardId);
-    setCardLabels(existing.map(l=>l.id));
+    const ids = existing.map(l=>l.id);
+    setCardLabels(ids);
+    setOriginalCardLabels(ids);
     setShowLabelModal(true);
   };
 
-  const handleToggleLabel = async (labelId) => {
-    if (cardLabels.includes(labelId)) {
-      await removeLabelFromCard(selectedCardId, labelId, token);
-      setCardLabels(prev=>prev.filter(id=>id!==labelId));
-    } else {
-      await assignLabelToCard(selectedCardId, labelId, token);
-      setCardLabels(prev=>[...prev, labelId]);
+  const handleToggleLabel = (labelId) => {
+    setCardLabels(prev =>
+      prev.includes(labelId)
+        ? prev.filter(id => id !== labelId)
+        : [...prev, labelId]
+    );
+  };
+
+  const handleAssignLabels = async () => {
+    // assign new
+    for (const id of cardLabels.filter(id => !originalCardLabels.includes(id))) {
+      await assignLabelToCard(selectedCardId, id, token);
     }
+    // remove unchecked
+    for (const id of originalCardLabels.filter(id => !cardLabels.includes(id))) {
+      await removeLabelFromCard(selectedCardId, id, token);
+    }
+    setShowLabelModal(false);
+    // Optionnel: recharger la liste de cartes ou mettre à jour localement...
   };
 
   const handleCreateNewLabel = async (e) => {
@@ -536,6 +550,7 @@ function Board() {
                 </label>
               ))}
             </div>
+
             <form onSubmit={handleCreateNewLabel} className="new-label-form">
               <input
                 type="text"
@@ -551,6 +566,9 @@ function Board() {
               />
               <button type="submit">Créer label</button>
             </form>
+            <button onClick={handleAssignLabels} className="assign-label-button">
+              Assigner
+            </button>
             <button onClick={()=>setShowLabelModal(false)}>Fermer</button>
           </div>
         </div>,
