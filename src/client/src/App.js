@@ -1,5 +1,5 @@
 // App.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { TokenProvider, TokenContext } from './context/TokenContext';
 import Login from './pages/login';
@@ -10,7 +10,16 @@ import Board from './pages/board';
 import Profile from './pages/profile';
 
 function App() {
-  const { token } = useContext(TokenContext) || {};
+  const { token, setToken } = useContext(TokenContext) || {};
+
+  useEffect(() => {
+    // Initialisez le token depuis localStorage au démarrage de l'application
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      console.log('Token initial chargé depuis localStorage:', storedToken);
+      setToken(storedToken); // Mettez à jour le contexte avec le token
+    }
+  }, [setToken]);
 
   return (
     <TokenProvider>

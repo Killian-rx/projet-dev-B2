@@ -20,7 +20,6 @@ export const loginUser = async (userData) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
             body: JSON.stringify(userData),
         });
@@ -33,7 +32,16 @@ export const loginUser = async (userData) => {
         console.log('Réponse de connexion:', data); // Log pour vérifier la réponse de l'API
         if (data.token) {
             console.log('Token reçu:', data.token); // Log pour vérifier le token reçu
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('token', data.token); // Stocke le token dans localStorage
+
+            // Vérifiez immédiatement si le token est bien stocké
+            const storedToken = localStorage.getItem('token');
+            console.log('Token stocké dans localStorage:', storedToken);
+
+            // Ajoutez une redirection ici si nécessaire
+            // Exemple : window.location.href = '/dashboard';
+        } else {
+            console.error('Aucun token reçu après la connexion.');
         }
         return data;
     } catch (error) {
@@ -44,11 +52,12 @@ export const loginUser = async (userData) => {
 
 export const getUserProfile = async (token) => {
   try {
+    console.log('Token utilisé pour getUserProfile:', token);
     const response = await fetch(`${API_URL}/user/me`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // Inclut le token pour l'authentification
+        Authorization: `Bearer ${token}`,
       },
     });
     if (!response.ok) {
@@ -59,6 +68,15 @@ export const getUserProfile = async (token) => {
     console.error('Erreur API getUserProfile:', error);
     return null;
   }
+};
+
+export const updateUserProfile = async (data, token) => {
+  const res = await fetch(`${API_URL}/user/me`, {
+    method: 'PUT',
+    headers: jsonHeaders(token),
+    body: JSON.stringify(data),
+  });
+  return await res.json();
 };
 
 // --- BOARDS ---

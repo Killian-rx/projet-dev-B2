@@ -24,6 +24,8 @@
   cursor: pointer;
 }
 
+
+
 .board-members span {
   margin-left: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -32,11 +34,15 @@
 }
 
 .new-list-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw;
   padding: 1rem;
   background: #f4f5f7;
   display: flex;
   gap: 0.5rem;
-  
 }
 
 .lists-container {
@@ -202,7 +208,7 @@
   display: none; /* Masque les infos par défaut */
   position: absolute;
   top: 45px; /* Positionne juste en dessous de l'avatar */
-  left: 50%;
+  left: 40%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 1); /* Fond semi-transparent */
   color: white;
