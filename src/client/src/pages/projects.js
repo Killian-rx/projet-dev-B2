@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getBoards, createBoard } from '../services/api';
+import ReactDOM from 'react-dom';
+import { getBoards, createBoard, getBoardMembers, updateBoard, deleteBoard } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar'; // Importez le composant Navbar
 import '../css/projects.css';// Assurez-vous que le chemin est correct pour l'image par défaut
@@ -18,6 +19,7 @@ function Projects() {
   const [addError, setAddError] = useState(null);
   const [adding, setAdding] = useState(false);
   const [recent, setRecent] = useState([]);
+  const [dropdown, setDropdown] = useState({ visible:false, x:0, y:0, boardId:null });
 
   // Charge la liste des récents au montage
   useEffect(() => {
@@ -25,25 +27,34 @@ function Projects() {
     setRecent(rp);
   }, []);
 
+  // définition en amont pour être visible dans useEffect
+  const fetchBoards = async () => {
+    try {
+      const data = await getBoards(token);
+      console.log('Données reçues du backend:', data); // tu confirmes ici
+      const boardsWithMembers = await Promise.all(
+        data.map(async b => {
+          const members = await getBoardMembers(b.id, token);
+          return { ...b, members: Array.isArray(members) ? members : [] };
+        })
+      );
+      setBoards(boardsWithMembers);
+      const rp = JSON.parse(localStorage.getItem('recentProjects') || '[]');
+      setRecent(rp.map(rpBoard =>
+        boardsWithMembers.find(b => b.id === rpBoard.id) || rpBoard
+      ));
+    } catch {
+      setError('Erreur lors du chargement des projets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       navigate('/login'); // Redirige si le token est manquant
       return;
     }
-    const fetchBoards = async () => {
-        try {
-            const data = await getBoards(token);
-            console.log('Données reçues du backend:', data); // Vérifiez que 'image' est présent
-            if (data.error) {
-                setError(data.error);
-            } else {
-                setBoards(data);
-            }
-        } catch (err) {
-            setError('Erreur lors du chargement des projets');
-        }
-        setLoading(false);
-    };
     fetchBoards();
   }, [token, navigate]);
 
@@ -75,7 +86,16 @@ function Projects() {
       if (data.error) {
         setAddError(data.error);
       } else {
-        setBoards((prev) => [...prev, data]);
+
+        // Aller chercher les membres pour ce board (normalement l'utilisateur créateur)
+        const members = await getBoardMembers(data.id, token);
+
+        // Ajouter le board avec les membres enrichis :
+        await fetchBoards();
+
+        // MAJ projets récents si besoin
+        updateRecent({ ...data, members: Array.isArray(members) ? members : [] });
+
         handleCancel();
       }
     } catch (err) {
@@ -93,8 +113,79 @@ function Projects() {
     setBoards((prevBoards) => [...prevBoards, newProject]); // Ajoute le nouveau projet à la liste
   };
 
+  // affiche le menu 3-points
+  const handleShowDropdown = (e, boardId) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const viewportHeight = window.innerHeight;
+    const menuHeight = 100; // approx hauteur menu
+    const top = Math.min(rect.bottom + window.scrollY, viewportHeight - menuHeight);
+
+    console.log('Dropdown coords:', rect.left + window.scrollX, top);
+
+    setDropdown({
+      visible: true,
+      x: rect.left + window.scrollX,
+      y: top,
+      boardId
+    });
+  };
+
+  const handleCloseDropdown = () => setDropdown({ visible:false, x:0, y:0, boardId:null });
+
+  // renommer un projet
+  const handleEditProject = async () => {
+    const newName = window.prompt('Entrez le nouveau nom du projet :');
+    if (!newName) return handleCloseDropdown();
+    const res = await updateBoard(dropdown.boardId, { name: newName }, token);
+    if (!res.error) {
+      setBoards(prev => prev.map(b => b.id===dropdown.boardId ? { ...b, name:newName } : b));
+    }
+    handleCloseDropdown();
+  };
+
+  // supprimer un projet
+  const handleDeleteProject = async () => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) 
+      return handleCloseDropdown();
+    await deleteBoard(dropdown.boardId, token);
+
+    // retirer du state "boards"
+    setBoards(prev => prev.filter(b => b.id !== dropdown.boardId));
+
+    // retirer de "recent" et de localStorage
+    setRecent(prev => {
+      const newRecent = prev.filter(b => b.id !== dropdown.boardId);
+      localStorage.setItem('recentProjects', JSON.stringify(newRecent));
+      return newRecent;
+    });
+
+    handleCloseDropdown();
+  };
+
+  // fermer menu au clic hors
+  useEffect(() => {
+    const onClickOutside = () => { if (dropdown.visible) handleCloseDropdown(); };
+    if (dropdown.visible) document.addEventListener('click', onClickOutside);
+    return () => document.removeEventListener('click', onClickOutside);
+  }, [dropdown.visible]);
+
+  // DEBUG: vérifie les datas chargées
+  console.log('Projects render – recent projects:', recent, 'all boards:', boards);
+  // DEBUG: affiche les initiales des membres des projets récents
+  console.log(
+    'Initiales projets récents:',
+    recent.map(b => (b.members || []).map(m => m.user.name.charAt(0).toUpperCase()))
+  );
+  // DEBUG: affiche les initiales des membres de tous les projets
+  console.log(
+    'Initiales tous projets:',
+    boards.map(b => (b.members || []).map(m => m.user.name.charAt(0).toUpperCase()))
+  );
+
   if (loading) return <p>Chargement des projets...</p>;
-  if (error) return <p>❌ {error}</p>;
+  if (error)   return <p>❌ {error}</p>;
 
   return (
     <div className="projects-container">
@@ -123,17 +214,20 @@ function Projects() {
                 </div>
                 <div className="project-card-footer">
                   <div className="project-members">
-                    {b.members?.map((member) => (
-                      <span key={member.id} className="member-initial">
-                        {member?.name?.charAt(0).toUpperCase() || '?'}
+                    {(b.members || []).map(m => (
+                      <span key={m.user.id} className="member-initial">
+                        {m.user.name.charAt(0).toUpperCase()}
+                        <div className="member-info">
+                          {m.user.name} ({m.role.name})
+                        </div>
                       </span>
                     ))}
                   </div>
                   <button
                     className="more-options"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Empêche la navigation si le bouton est cliqué
-                      console.log('Options clicked');
+                    onClick={e => {
+                       e.stopPropagation();
+                       handleShowDropdown(e, b.id);
                     }}
                   >
                     ...
@@ -167,18 +261,15 @@ function Projects() {
               </div>
               <div className="project-card-footer">
                 <div className="project-members">
-                  {board.members?.map((member) => (
-                    <span key={member.id} className="member-initial">
-                      {member?.name?.charAt(0).toUpperCase() || '?'}
+                  {(board.members || []).map(m => (
+                    <span key={m.user.id} className="member-initial">
+                      {m.user.name.charAt(0).toUpperCase()}
                     </span>
                   ))}
                 </div>
                 <button
                   className="more-options"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Empêche la navigation si le bouton est cliqué
-                    console.log('Options clicked');
-                  }}
+                  onClick={e => handleShowDropdown(e, board.id)}
                 >
                   ...
                 </button>
@@ -187,6 +278,29 @@ function Projects() {
           ))}
         </div>
       </div>
+
+      {dropdown.visible && ReactDOM.createPortal(
+        <div
+          className="dropdown-menu"
+          style={{
+            position: 'fixed',
+            top: dropdown.y + 'px',
+            left: dropdown.x + 'px',
+            zIndex: 99999,
+            backgroundColor: '#fff',
+            border: '1px solid rgba(0,0,0,0.2)',
+            borderRadius: '4px',
+            padding: '8px 0',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+          }}
+        >
+          <button onClick={handleEditProject}>Modifier</button>
+          <button onClick={handleDeleteProject}>Supprimer</button>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

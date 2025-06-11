@@ -1,5 +1,7 @@
 const Project = require('../models/boards'); // Assurez-vous que le modèle est correctement importé
 
+
+
 // Fonction pour créer un projet
 const createBoard = async (req, res) => {
     try {

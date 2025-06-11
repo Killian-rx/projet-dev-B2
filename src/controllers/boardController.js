@@ -43,14 +43,32 @@ const boardController = {
     }
   },
 
-  updateBoard: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Board ${id} mis à jour` });
+  updateBoard: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, image } = req.body;
+      const board = await Board.findByPk(id);
+      if (!board) return res.status(404).json({ error: 'Projet non trouvé' });
+      if (name)  board.name  = name;
+      if (image) board.image = image;
+      await board.save();
+      return res.json(board);
+    } catch (error) {
+      console.error('Erreur updateBoard:', error);
+      return res.status(500).json({ error: 'Erreur serveur lors de la mise à jour' });
+    }
   },
 
-  deleteBoard: (req, res) => {
-    const { id } = req.params;
-    res.status(200).json({ message: `Board ${id} supprimé` });
+  deleteBoard: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await Board.destroy({ where: { id } });
+      if (!deleted) return res.status(404).json({ error: 'Projet non trouvé' });
+      return res.json({ message: 'Projet supprimé avec succès' });
+    } catch (error) {
+      console.error('Erreur deleteBoard:', error);
+      return res.status(500).json({ error: 'Erreur serveur lors de la suppression' });
+    }
   },
 
   getBoardMembers: async (req, res) => {
