@@ -516,7 +516,7 @@ function Board() {
             <div className="comment-list">
               {comments.map(c => (
                 <div key={c.id} className="comment-item">
-                  <strong>{c.user_id}</strong>: {c.content}
+                  <strong>{c.user.name}</strong>: {c.content}
                 </div>
               ))}
             </div>

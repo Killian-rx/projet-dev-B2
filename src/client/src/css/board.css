@@ -159,7 +159,7 @@
   background-color: rgba(0, 0, 0, 0.4); /* Fond semi-transparent pour contraster avec l'image */
   padding: 0.8rem 2rem;
   position: sticky;
-  top: 3rem; /* Place la barre en dessous de la navbar principale */
+  top: 3.4rem; /* Place la barre en dessous de la navbar principale */
   z-index: 900;
   text-align: center;
 }
