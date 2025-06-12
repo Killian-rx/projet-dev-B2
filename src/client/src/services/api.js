@@ -305,3 +305,16 @@ export const getProjectDetails = async (id) => {
     throw error;
   }
 };
+
+// --- SHARE BOARD ---
+export const shareBoard = async (boardId, email, token) => {
+    const res = await fetch(`${API_URL}/boards/${boardId}/share`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ email })
+    });
+    return res.json();
+};

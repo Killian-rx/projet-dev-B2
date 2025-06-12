@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { getBoards, createBoard, getBoardMembers, updateBoard, deleteBoard } from '../services/api';
+import { getBoards, createBoard, getBoardMembers, updateBoard, deleteBoard, shareBoard } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar'; // Importez le composant Navbar
 import '../css/projects.css';// Assurez-vous que le chemin est correct pour l'image par défaut
@@ -164,6 +164,31 @@ function Projects() {
     handleCloseDropdown();
   };
 
+  // nouveau handler partage
+  const handleShareProject = async () => {
+    const email = window.prompt("Entrez l'email de l'utilisateur à ajouter :");
+    if (!email) return handleCloseDropdown();
+    try {
+      const newMember = await shareBoard(dropdown.boardId, email, token);
+      if (newMember.error) {
+        alert(`Erreur : ${newMember.error}`);
+      } else {
+        setBoards(prev =>
+          prev.map(b =>
+            b.id === dropdown.boardId
+              ? { ...b, members: [...(b.members||[]), newMember] }
+              : b
+          )
+        );
+        alert('Utilisateur ajouté en tant que membre.');
+      }
+    } catch (err) {
+      alert('Erreur lors du partage.');
+    } finally {
+      handleCloseDropdown();
+    }
+  };
+
   // fermer menu au clic hors
   useEffect(() => {
     const onClickOutside = () => { if (dropdown.visible) handleCloseDropdown(); };
@@ -171,18 +196,6 @@ function Projects() {
     return () => document.removeEventListener('click', onClickOutside);
   }, [dropdown.visible]);
 
-  // DEBUG: vérifie les datas chargées
-  console.log('Projects render – recent projects:', recent, 'all boards:', boards);
-  // DEBUG: affiche les initiales des membres des projets récents
-  console.log(
-    'Initiales projets récents:',
-    recent.map(b => (b.members || []).map(m => m.user.name.charAt(0).toUpperCase()))
-  );
-  // DEBUG: affiche les initiales des membres de tous les projets
-  console.log(
-    'Initiales tous projets:',
-    boards.map(b => (b.members || []).map(m => m.user.name.charAt(0).toUpperCase()))
-  );
 
   if (loading) return <p>Chargement des projets...</p>;
   if (error)   return <p>❌ {error}</p>;
@@ -214,14 +227,17 @@ function Projects() {
                 </div>
                 <div className="project-card-footer">
                   <div className="project-members">
-                    {(b.members || []).map(m => (
-                      <span key={m.user.id} className="member-initial">
-                        {m.user.name.charAt(0).toUpperCase()}
-                        <div className="member-info">
-                          {m.user.name} ({m.role.name})
-                        </div>
-                      </span>
-                    ))}
+                    {(b.members || []).map(m => {
+                      const initial = m.user?.name?.charAt(0).toUpperCase() || '';
+                      return (
+                        <span key={m.user?.id || Math.random()} className="member-initial">
+                          {initial}
+                          <div className="member-info">
+                            {m.user?.name} ({m.role?.name})
+                          </div>
+                        </span>
+                      );
+                    })}
                   </div>
                   <button
                     className="more-options"
@@ -261,11 +277,14 @@ function Projects() {
               </div>
               <div className="project-card-footer">
                 <div className="project-members">
-                  {(board.members || []).map(m => (
-                    <span key={m.user.id} className="member-initial">
-                      {m.user.name.charAt(0).toUpperCase()}
-                    </span>
-                  ))}
+                  {(board.members || []).map(m => {
+                    const initial = m.user?.name?.charAt(0).toUpperCase() || '';
+                    return (
+                      <span key={m.user?.id || Math.random()} className="member-initial">
+                        {initial}
+                      </span>
+                    );
+                  })}
                 </div>
                 <button
                   className="more-options"
@@ -296,6 +315,7 @@ function Projects() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
           }}
         >
+          <button onClick={handleShareProject}>Partager</button>
           <button onClick={handleEditProject}>Modifier</button>
           <button onClick={handleDeleteProject}>Supprimer</button>
         </div>,

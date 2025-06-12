@@ -103,6 +103,40 @@ const boardController = {
     }
   },
 
+  // Ajoute la fonction de partage via email
+  shareBoard: async (req, res) => {
+    try {
+      const { id: boardId } = req.params;
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: 'Le champ email est requis.' });
+      }
+      // Recherche de l'utilisateur par email
+      const User = require('../models/users');
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+      }
+      // Création du rôle membre (role_id = 2)
+      const UserProjectRole = require('../models/user_project_role');
+      const member = await UserProjectRole.create({
+        user_id: user.id,
+        board_id: boardId,
+        role_id: 2
+      });
+      return res.status(201).json({
+        message: 'Projet partagé avec succès.',
+        member: {
+          user: { id: user.id, name: user.name, email: user.email },
+          role: { id: 2, name: 'Member' }
+        }
+      });
+    } catch (error) {
+      console.error('Erreur shareBoard:', error);
+      return res.status(500).json({ error: 'Erreur serveur lors du partage du projet.' });
+    }
+  },
+
   addBoardMember: async (req, res) => {
     try {
       const { id: boardId } = req.params;

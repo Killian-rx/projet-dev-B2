@@ -29,4 +29,7 @@ router.delete('/:id/roles/:userId', boardController.removeUserRole);
 router.get('/:id/labels', labelController.getLabelsByBoard);    // récupère tous les labels
 router.post('/:id/labels', labelController.createLabel);        // crée un nouveau label
 
+// Gestion du partage de projets
+router.post('/:id/share', boardController.shareBoard);         // partage le projet avec un utilisateur
+
 module.exports = router;
