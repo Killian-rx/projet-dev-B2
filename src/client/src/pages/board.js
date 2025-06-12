@@ -14,6 +14,7 @@ function Board() {
   const [showListForm, setShowListForm] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [addingList, setAddingList] = useState(false);
+  const [addingListInline, setAddingListInline] = useState(false);
   const [listError, setListError] = useState(null);
   const [board, setBoard] = useState(null);
   const [lists, setLists] = useState([]);
@@ -33,6 +34,8 @@ function Board() {
   const [labelForm, setLabelForm] = useState({ name: '', color: '#ff0000' });
   const [cardLabels, setCardLabels] = useState([]);      // id[] pour la carte courante
   const [originalCardLabels, setOriginalCardLabels] = useState([]); // snapshot initial
+  const [addingCardListId, setAddingCardListId] = useState(null);
+  const [newCardText, setNewCardText] = useState('');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -41,6 +44,24 @@ function Board() {
     '/assets/boards/img3.jpg',
     '/assets/boards/img4.jpg',
   ]; // Liste des images disponibles
+
+  // --- Ajout de fetchBoard pour recharger listes et cartes ---
+  const fetchBoard = async () => {
+    try {
+      const l = await getListsByBoard(id, token);
+      if (!l.error) {
+        setLists(l);
+        const map = {};
+        for (const lst of l) {
+          const cards = await getCardsByList(lst.id, token);
+          map[lst.id] = Array.isArray(cards) ? cards : [];
+        }
+        setCardsByList(map);
+      }
+    } catch (err) {
+      console.error('Erreur fetchBoard:', err);
+    }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -55,25 +76,13 @@ function Board() {
         } else {
           setBoard(b);
         }
-        const l = await getListsByBoard(id, token);
-        if (l.error) {
-          setError(l.error);
-        } else {
-          setLists(l);
-          // fetch cards for each list
-          const map = {};
-          for (const lst of l) {
-            const cards = await getCardsByList(lst.id, token); // now matches /cards/lists/:listId/cards
-            map[lst.id] = Array.isArray(cards) ? cards : [];
-          }
-          setCardsByList(map);
-          // fetch members
-          const mem = await getBoardMembers(id, token);
-          setMembers(Array.isArray(mem) ? mem : []);
-          // fetch labels
-          const lb = await getLabelsByBoard(id, token);
-          setLabels(Array.isArray(lb) ? lb : []);
-        }
+        fetchBoard();  // utilise la fonction définie ci-dessus
+        // fetch members
+        const mem = await getBoardMembers(id, token);
+        setMembers(Array.isArray(mem) ? mem : []);
+        // fetch labels
+        const lb = await getLabelsByBoard(id, token);
+        setLabels(Array.isArray(lb) ? lb : []);
       } catch {
         setError('Erreur lors du chargement du projet');
       } finally {
@@ -328,6 +337,37 @@ function Board() {
     setLabelForm({ name:'', color:'#ff0000' });
   };
 
+  const handleStartAddCard = listId => {
+    setAddingCardListId(listId);
+    setNewCardText('');
+  };
+
+  const handleNewCardKeyDown = async (e, listId) => {
+    if (e.key === 'Enter' && newCardText.trim()) {
+      await createCard(listId, { title: newCardText }, token);
+      await fetchBoard();    // maintenant défini
+      setAddingCardListId(null);
+    }
+    if (e.key === 'Escape') {
+      setAddingCardListId(null);
+    }
+  };
+
+  const handleNewListKeyDownInline = async e => {
+    if (e.key === 'Enter' && newListName.trim()) {
+      await createList(id, { name: newListName }, token);
+      await fetchBoard();
+      setNewListName('');
+      setAddingListInline(false);
+    }
+    if (e.key === 'Escape') {
+      setNewListName('');
+      setAddingListInline(false);
+    }
+  };
+
+  // Suppression de l'useEffect qui fermait l'input au clic hors
+
   if (loading) return <p>Chargement du projet...</p>;
   if (error) return <p>❌ {error}</p>;
 
@@ -461,15 +501,64 @@ function Board() {
               </div>
             ))}
             {/* Add card placeholder/option */}
-            <button onClick={()=>handleAddCard(list.id)} className="add-card-button">+ Ajouter une carte</button>
+            <div
+              className="add-card-section"
+              tabIndex={0}
+              onBlur={() => setAddingCardListId(null)}
+            >
+              {addingCardListId === list.id
+                ? (
+                  <input
+                    type="text"
+                    className="add-card-input"
+                    autoFocus
+                    placeholder="Titre de la carte"
+                    value={newCardText}
+                    onChange={e => setNewCardText(e.target.value)}
+                    onKeyDown={e => handleNewCardKeyDown(e, list.id)}
+                  />
+                )
+                : (
+                  <button
+                    className="add-card-button"
+                    onClick={() => handleStartAddCard(list.id)}
+                  >
+                    + Ajouter une carte
+                  </button>
+                )
+              }
+            </div>
           </div>
         ))}
-        <button
-          className="add-list-column-button"
-          onClick={handleShowListForm}
+
+        {/* remplace le bouton d'ajout de liste par un input inline */}
+        <div
+          className="add-list-section"
+          tabIndex={0}
+          onBlur={() => setAddingListInline(false)}
         >
-          + Ajouter une autre liste
-        </button>
+          {addingListInline
+            ? (
+              <input
+                type="text"
+                className="add-list-input"
+                autoFocus
+                placeholder="+ Nom de la liste"
+                value={newListName}
+                onChange={e => setNewListName(e.target.value)}
+                onKeyDown={handleNewListKeyDownInline}
+              />
+            )
+            : (
+              <button
+                className="add-list-column-button"
+                onClick={() => { setAddingListInline(true); setNewListName(''); }}
+              >
+                + Ajouter une autre liste
+              </button>
+            )
+          }
+        </div>
       </div>
       {/* Render dropdown via portal */}
       {dropdown.visible && ReactDOM.createPortal(
