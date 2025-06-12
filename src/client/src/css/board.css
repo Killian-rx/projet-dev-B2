@@ -24,8 +24,6 @@
   cursor: pointer;
 }
 
-
-
 .board-members span {
   margin-left: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -212,7 +210,7 @@
   display: none; /* Masque les infos par défaut */
   position: absolute;
   top: 45px; /* Positionne juste en dessous de l'avatar */
-  left: 40%;
+  left: 1px; /* Centre horizontalement par rapport à l'avatar */
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 1); /* Fond semi-transparent */
   color: white;
