@@ -36,6 +36,17 @@ function Board() {
   const [originalCardLabels, setOriginalCardLabels] = useState([]); // snapshot initial
   const [addingCardListId, setAddingCardListId] = useState(null);
   const [newCardText, setNewCardText] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [cardToDelete, setCardToDelete] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [cardToEdit, setCardToEdit] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [showEditListModal, setShowEditListModal] = useState(false);
+  const [listToEdit, setListToEdit] = useState(null);
+  const [editListText, setEditListText] = useState('');
+  const [showDeleteListModal, setShowDeleteListModal] = useState(false);
+  const [listToDelete, setListToDelete] = useState(null);
+
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const images = [
@@ -147,18 +158,18 @@ function Board() {
     }
   };
 
-  // Handler for list update
-  const handleEditList = async (listId) => {
-    const newName = window.prompt('Entrez le nouveau nom de la liste :');
-    if (!newName) return;
-    try {
-      const updatedList = await updateList(listId, { name: newName }, token);
-      if (!updatedList.error) {
-        setLists((prevLists) => prevLists.map((list) => list.id === listId ? updatedList : list));
-      }
-    } catch (error) {
-      console.error('Erreur lors de la modification de la liste:', error);
-    }
+  // Open edit list modal
+  const promptEditList = (listId) => {
+    const list = lists.find(l => l.id === listId);
+    setListToEdit(listId);
+    setEditListText(list ? list.name : '');
+    setShowEditListModal(true);
+  };
+
+  // Open delete list confirmation modal
+  const promptDeleteList = (listId) => {
+    setListToDelete(listId);
+    setShowDeleteListModal(true);
   };
 
   // Handler for list deletion
@@ -222,15 +233,30 @@ function Board() {
   };
 
   const handleDeleteCard = async (cardId) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')) return;
     try {
       await deleteCard(cardId, token);
-      // Reload the page to reflect deletion
-      window.location.reload();
+      setCardsByList(prev => {
+        const updated = {};
+        Object.entries(prev).forEach(([listId, cards]) => {
+          updated[listId] = cards.filter(c => c.id !== cardId);
+        });
+        return updated;
+      });
     } catch (error) {
-      console.error("Erreur lors de la suppression de la carte", error);
+      console.error('Erreur lors de la suppression de la carte', error);
       alert('Une erreur est survenue lors de la suppression de la carte.');
     }
+  };
+
+  const promptDeleteCard = (cardId) => {
+    setCardToDelete(cardId);
+    setShowDeleteConfirm(true);
+  };
+  const promptEditCard = (cardId) => {
+    const card = Object.values(cardsByList).flat().find(c => c.id === cardId);
+    setCardToEdit(cardId);
+    setEditText(card ? card.title : '');
+    setShowEditModal(true);
   };
 
   // Add new handlers for card dropdown:
@@ -357,11 +383,18 @@ function Board() {
 
   const handleNewCardKeyDown = async (e, listId) => {
     if (e.key === 'Enter' && newCardText.trim()) {
-      await createCard(listId, { title: newCardText }, token);
-      await fetchBoard();    // maintenant défini
+      const newCard = await createCard(listId, { title: newCardText }, token);
+      if (!newCard.error) {
+        setCardsByList(prev => ({
+          ...prev,
+          [listId]: [...(prev[listId] || []), newCard]
+        }));
+      }
+      setNewCardText('');
       setAddingCardListId(null);
     }
     if (e.key === 'Escape') {
+      setNewCardText('');
       setAddingCardListId(null);
     }
   };
@@ -583,10 +616,10 @@ function Board() {
             display: 'block' // force the dropdown to be visible
           }}
         >
-          <button onClick={() => { handleEditList(dropdown.listId); handleCloseDropdown(); }}>
+          <button onClick={() => { promptEditList(dropdown.listId); handleCloseDropdown(); }}>
             Modifier
           </button>
-          <button onClick={() => { handleDeleteList(dropdown.listId); handleCloseDropdown(); }}>
+          <button onClick={() => { promptDeleteList(dropdown.listId); handleCloseDropdown(); }}>
             Supprimer
           </button>
         </div>,
@@ -602,10 +635,10 @@ function Board() {
             display: 'block' // force visibility
           }}
         >
-          <button onClick={() => { handleEditCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
+          <button onClick={() => { promptEditCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
             Modifier
           </button>
-          <button onClick={() => { handleDeleteCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
+          <button onClick={() => { promptDeleteCard(cardDropdown.cardId); handleCloseCardDropdown(); }}>
             Supprimer
           </button>
         </div>,
@@ -675,6 +708,114 @@ function Board() {
           </div>
         </div>,
         document.body
+      )}
+      {showDeleteConfirm && ReactDOM.createPortal(
+        <div className="delete-confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="delete-confirm" onClick={e => e.stopPropagation()}>
+            <p>Êtes-vous sûr de vouloir supprimer cette carte ?</p>
+            <div className="delete-confirm-actions">
+              <button onClick={async () => { await handleDeleteCard(cardToDelete); setShowDeleteConfirm(false); }}>
+                Oui
+              </button>
+              <button onClick={() => setShowDeleteConfirm(false)}>
+                Non
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {showEditModal && ReactDOM.createPortal(
+        <div className="edit-confirm-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="edit-confirm" onClick={e => e.stopPropagation()}>
+            <p>Modifier le titre de la carte :</p>
+            <input
+              type="text"
+              value={editText}
+              onChange={e => setEditText(e.target.value)}
+            />
+            <div className="edit-confirm-actions">
+              <button onClick={async () => {
+                if (!editText.trim()) return;
+                try {
+                  await updateCard(cardToEdit, { title: editText }, token);
+                  setCardsByList(prev => {
+                    const updated = {};
+                    Object.entries(prev).forEach(([listId, cards]) => {
+                      updated[listId] = cards.map(c => c.id === cardToEdit ? { ...c, title: editText } : c);
+                    });
+                    return updated;
+                  });
+                  setShowEditModal(false);
+                  setCardToEdit(null);
+                  setEditText('');
+                } catch (err) {
+                  console.error('Erreur lors de la modification de la carte', err);
+                  alert('Échec de la modification');
+                }
+              }}>
+                OK
+              </button>
+              <button onClick={() => setShowEditModal(false)}>Annuler</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {/* Edit List Modal */}
+      {showEditListModal && ReactDOM.createPortal(
+        <div className="edit-list-overlay" onClick={() => setShowEditListModal(false)}>
+          <div className="edit-list-modal" onClick={e => e.stopPropagation()}>
+            <p>Modifier le nom de la liste :</p>
+            <input
+              type="text"
+              value={editListText}
+              onChange={e => setEditListText(e.target.value)}
+            />
+            <div className="edit-list-actions">
+              <button onClick={async () => {
+                if (!editListText.trim()) return;
+                try {
+                  const updated = await updateList(listToEdit, { name: editListText }, token);
+                  setLists(prev => prev.map(l => l.id === listToEdit ? updated : l));
+                } catch (err) {
+                  console.error('Erreur modification liste', err);
+                }
+                setShowEditListModal(false);
+                setListToEdit(null);
+                setEditListText('');
+              }}>
+                OK
+              </button>
+              <button onClick={() => setShowEditListModal(false)}>Annuler</button>
+            </div>
+          </div>
+        </div>, document.body
+      )}
+
+      {/* Delete List Modal */}
+      {showDeleteListModal && ReactDOM.createPortal(
+        <div className="delete-list-overlay" onClick={() => setShowDeleteListModal(false)}>
+          <div className="delete-list-modal" onClick={e => e.stopPropagation()}>
+            <p>Êtes-vous sûr de supprimer cette liste ?</p>
+            <div className="delete-list-actions">
+              <button onClick={async () => {
+                try {
+                  await deleteList(listToDelete, token);
+                  setLists(prev => prev.filter(l => l.id !== listToDelete));
+                  setCardsByList(prev => { const m = {...prev}; delete m[listToDelete]; return m; });
+                } catch (err) {
+                  console.error('Erreur suppression liste', err);
+                }
+                setShowDeleteListModal(false);
+                setListToDelete(null);
+              }}>
+                Oui
+              </button>
+              <button onClick={() => setShowDeleteListModal(false)}>Non</button>
+            </div>
+          </div>
+        </div>, document.body
       )}
     </div>
   );

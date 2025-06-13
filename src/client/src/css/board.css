@@ -45,11 +45,18 @@
 
 .lists-container {
   display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping to allow horizontal scroll */
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  height: calc(100vh - 100px);
+  height: auto;
+}
+
+/* Comment out hiding of scrollbar */
+/* Hide scrollbar for WebKit browsers */
+.lists-container::-webkit-scrollbar {
+  display: none;
 }
 
 .list-column {
@@ -236,13 +243,19 @@
 
 .lists-container {
   display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping to allow horizontal scroll */
   gap: 1rem;
   padding: 1rem;
   border-radius: 8px;
   margin-top: 3rem; /* Ajuste la position pour qu'elle soit sous la navbar du projet */
   max-height: calc(100vh - 200px); /* Ajuste la hauteur pour laisser de l'espace pour les autres éléments */
   min-height: 100px; /* Assure une hauteur minimale pour les listes */
-  overflow-x: auto; /* Permet le défilement horizontal si nécessaire */
+  overflow-x: auto;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.lists-container::-webkit-scrollbar {
+  display: none;
 }
 
 .create-project-button {
@@ -422,29 +435,134 @@
 
 .label-modal-overlay {
   position: fixed; top:0; left:0; width:100%; height:100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.7);
   display:flex; justify-content:center; align-items:center;
   z-index:2000;
 }
 .label-modal {
-  background:#fff; color:#000; padding:1rem; border-radius:6px;
-  width:300px; max-height:80vh; overflow:auto;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
 }
+
+.label-modal h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+}
+
 .label-list {
-  display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
+
+.label-list label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #3a3a3a;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.label-list label:hover {
+  background: #4a4a4a;
+}
+
+.label-list input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3399ff;
+  cursor: pointer;
+}
+
 .label-pill {
-  display:inline-block; padding:2px 6px; border-radius:3px;
-  margin-left:4px; color:#fff; font-size:0.8rem;
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #fff;
 }
+
 .new-label-form {
-  display:flex; gap:0.5rem; margin-bottom:1rem;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
+
 .new-label-form input[type="text"] {
-  flex:1; padding:0.3rem;
+  flex: 1;
+  padding: 0.5rem;
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
 }
+
+.new-label-form input[type="color"] {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
 .new-label-form button {
-  padding:0.4rem 0.8rem; background:#026aa7; color:#fff; border:none; border-radius:4px;
+  padding: 0.5rem 1rem;
+  background: #3399ff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.new-label-form button:hover {
+  background: #2879cc;
+}
+
+.assign-label-button {
+  padding: 0.6rem 1.2rem;
+  background: #3399ff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background 0.2s;
+}
+
+.assign-label-button:hover {
+  background: #2879cc;
+}
+
+.label-modal button:last-of-type {
+  padding: 0.6rem 1.2rem;
+  background: #555;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.label-modal button:last-of-type:hover {
+  background: #444;
 }
 
 .add-card-input {
@@ -479,4 +597,238 @@
 .add-card-input:focus {
   background: #4b4b4ba6 !important;
   outline: none !important;
+}
+
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.delete-confirm {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+.delete-confirm p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.delete-confirm-actions {
+  display: flex;
+  justify-content: space-around;
+}
+.delete-confirm-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.delete-confirm-actions button:first-child {
+  background: #e53935;
+  color: #fff;
+}
+.delete-confirm-actions button:first-child:hover {
+  background: #c62828;
+}
+.delete-confirm-actions button:last-child {
+  background: #555;
+  color: #e0e0e0;
+}
+.delete-confirm-actions button:last-child:hover {
+  background: #444;
+}
+
+/* Edit Card Modal */
+.edit-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.edit-confirm {
+  background: #121212;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  color: #ddd;
+}
+
+.edit-confirm p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.edit-confirm input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  background: #1e1e1e;
+  color: #ddd;
+  border-radius: 4px;
+}
+
+.edit-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.edit-confirm-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  background: #5aac44;
+  color: white;
+}
+
+.edit-confirm-actions button:last-child {
+  background: #bbb;
+  color: #333;
+}
+
+.edit-confirm-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Edit List Modal */
+.edit-list-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.edit-list-modal {
+  background: #121212;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  color: #ddd;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.edit-list-modal p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.edit-list-modal input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  background: #1e1e1e;
+  color: #ddd;
+  border-radius: 4px;
+}
+
+.edit-list-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.edit-list-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  background: #5aac44;
+  color: white;
+}
+
+.edit-list-actions button:last-child {
+  background: #bbb;
+  color: #333;
+}
+
+.edit-list-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Delete List Modal */
+.delete-list-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.delete-list-modal {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.delete-list-modal p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.delete-list-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.delete-list-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.delete-list-actions button:first-child {
+  background: #e53935;
+  color: #fff;
+}
+
+.delete-list-actions button:first-child:hover {
+  background: #c62828;
+}
+
+.delete-list-actions button:last-child {
+  background: #555;
+  color: #e0e0e0;
+}
+
+.delete-list-actions button:last-child:hover {
+  background: #444;
 }
