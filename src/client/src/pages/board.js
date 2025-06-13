@@ -327,7 +327,20 @@ function Board() {
       await removeLabelFromCard(selectedCardId, id, token);
     }
     setShowLabelModal(false);
-    // Optionnel: recharger la liste de cartes ou mettre à jour localement...
+    // Update local state to reflect new labels immediately
+    setCardsByList(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(listId => {
+        updated[listId] = updated[listId].map(card => {
+          if (card.id === selectedCardId) {
+            const newLabels = labels.filter(l => cardLabels.includes(l.id));
+            return { ...card, labels: newLabels };
+          }
+          return card;
+        });
+      });
+      return updated;
+    });
   };
 
   const handleCreateNewLabel = async (e) => {
@@ -487,10 +500,10 @@ function Board() {
                   ))}
                 </div>
                 <button
-                  className="edit-button"
-                  onClick={e=>{e.stopPropagation(); handleOpenLabelModal(card.id, card.labels||[])}}
+                  className="tags-button"
+                  onClick={e=>{e.stopPropagation(); handleOpenLabelModal(card.id, card.labels||[]);}} // Remplacement de l'icône ici
                 >
-                  🎨
+                  Tags
                 </button>
                 <button
                   className="edit-button"
@@ -656,7 +669,7 @@ function Board() {
               <button type="submit">Créer label</button>
             </form>
             <button onClick={handleAssignLabels} className="assign-label-button">
-              Assigner
+              OK
             </button>
             <button onClick={()=>setShowLabelModal(false)}>Fermer</button>
           </div>

@@ -151,6 +151,17 @@
   margin-left: 0.5rem;
 }
 
+.tags-button {
+  background: rgba(255, 255, 255, 0.214);
+  border-radius: 15px;
+  border: none;
+  color: #bdbdbd;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+  padding: 5px 10px;
+}
+
 .project-navbar {
   display: flex;
   justify-content: space-between;

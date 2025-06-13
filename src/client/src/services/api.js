@@ -253,7 +253,15 @@ export const removeLabelFromCard = async (cardId, labelId, token) => {
     method: "DELETE",
     headers: jsonHeaders(token),
   });
-  return await res.json();
+  // Some DELETE endpoints return 204 No Content, so guard JSON parsing
+  if (res.status === 204 || res.status === 205) {
+    return {}; // No content to parse
+  }
+  try {
+    return await res.json();
+  } catch {
+    return {}; // fallback on empty or invalid JSON
+  }
 };
 
 // --- ROLES ---

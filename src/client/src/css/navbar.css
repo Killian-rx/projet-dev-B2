@@ -258,6 +258,7 @@ html, body {
 
 .popup h2 {
   margin-bottom: 1rem;
+  color: #000;
 }
 
 .popup input {
@@ -270,6 +271,11 @@ html, body {
 
 .popup .image-gallery {
   margin-bottom: 1rem;
+}
+
+.popup .image-gallery p {
+  margin: 0.5rem 0;
+  color: #555;
 }
 
 .popup button {
